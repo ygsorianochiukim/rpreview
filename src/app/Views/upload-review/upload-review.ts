@@ -14,6 +14,7 @@ import { ReviewContext } from '../../Models/review/review-context.model';
 })
 export class UploadReviewComponent implements OnInit {
   documentno!: string;
+  occupant!: string;
   interments: ReviewContext[] = [];
   reviewForm: FormGroup;
   fbScreenshotFile?: File;
@@ -45,8 +46,8 @@ googlePreview: string | null = null;
   }
 
   ngOnInit(): void {
-    this.documentno = this.route.snapshot.paramMap.get('documentno')!;
-    this.reviewService.getInterments(this.documentno).subscribe({
+    this.occupant = this.route.snapshot.paramMap.get('occupant')!;
+    this.reviewService.getInterments(this.occupant).subscribe({
       next: data => this.interments = data,
       error: err => console.error(err)
     });
@@ -86,9 +87,16 @@ onGoogleFileChange(event: any) {
       alert('Please fill in all required fields.');
       return;
     }
+      if (this.interments.length === 0) {
+    alert('No interment found for this occupant!');
+    return;
+  }
+
+  // Use the first interment's document_no (assuming 1 per occupant)
+  const documentno = this.interments[0].documentno;
 
     const formData = new FormData();
-    formData.append('document_no', this.documentno);
+    formData.append('document_no', documentno);
     formData.append('reviewer_name', this.reviewForm.get('reviewer_name')?.value);
     formData.append('q1', this.reviewForm.get('q1')?.value);
     formData.append('q2', this.reviewForm.get('q2')?.value);

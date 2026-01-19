@@ -13,8 +13,8 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  getInterments(documentno: string): Observable<ReviewContext[]> {
-    return this.http.get<ReviewContext[]>(`${this.intermentsUrl}/${documentno}`);
+  getInterments(occupant: string): Observable<ReviewContext[]> {
+    return this.http.get<ReviewContext[]>(`${this.intermentsUrl}/${occupant}`);
   }
 
   submitReview(formData: FormData): Observable<any> {
