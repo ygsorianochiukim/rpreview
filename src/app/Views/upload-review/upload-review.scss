@@ -1,52 +1,63 @@
-.container
-  max-width: 600px
-  margin: 0 auto
-  padding: 16px
-  font-family: Arial, sans-serif
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+}
 
-.records
-  .record-card
-    border: 1px solid #ddd
-    border-radius: 8px
-    padding: 12px
-    margin-bottom: 12px
-    background-color: #f9f9f9
+.records {
+  .record-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background-color: #f9f9f9;
+  }
+}
 
-.field
-  display: flex
-  flex-direction: column
-  margin-bottom: 12px
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
 
-  label
-    margin-bottom: 4px
-    font-weight: bold
+  label {
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
 
   input[type='text'],
-  input[type='file']
-    padding: 8px
-    border-radius: 4px
-    border: 1px solid #ccc
-    width: 100%
-    box-sizing: border-box
+  input[type='file'] {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
 
-.field-group
-  display: grid
-  grid-template-columns: 1fr
-  gap: 12px
+.field-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
 
-.submit-btn
-  background-color: #007bff
-  color: white
-  padding: 10px 16px
-  border: none
-  border-radius: 6px
-  cursor: pointer
-  width: 100%
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
 
-  &:hover
-    background-color: #0056b3
+  &:hover {
+    background-color: #0056b3;
+  }
+}
 
 /* Media queries for larger screens */
-@media (min-width: 600px)
-  .field-group
-    grid-template-columns: 1fr 1fr
+@media (min-width: 600px) {
+  .field-group {
+    grid-template-columns: 1fr 1fr;
+  }
+}

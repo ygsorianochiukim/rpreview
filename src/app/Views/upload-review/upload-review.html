@@ -1,163 +1,238 @@
-  <div class="max-w-lg mx-auto p-4 font-sans">
+<div class="min-h-screen bg-cover bg-center px-4 md:px-6 lg:px-8 py-6" style="background-image: url('background.webp');">
 
-    <!--
-    <h2 class="text-2xl font-bold mb-4">
-      Interment Record for Document: {{ documentno }}
-    </h2>
-  -->
-
-    <div *ngIf="interments.length > 0; else noRecords" class="space-y-4">
-      <div *ngFor="let i of interments" class="bg-gray-100 p-4 rounded-lg shadow">
-        
-        <div class="mb-2">
-          <label class="block font-semibold mb-1">Name:</label>
-          <input type="text" [value]="i.name1" readonly class="w-full border border-gray-300 rounded p-2 bg-gray-50">
-        </div>
-
-        <div class="mb-2">
-          <!--<label class="block font-semibold mb-1">Document No:</label>-->
-          <input type="hidden" [value]="i.documentno" readonly class="w-full border border-gray-300 rounded p-2 bg-gray-50">
-        </div>
-
-        <div class="mb-2">
-          <label class="block font-semibold mb-1">Date:</label>
-          <input type="text" [value]="i.date_interment | date:'mediumDate'" readonly class="w-full border border-gray-300 rounded p-2 bg-gray-50">
-        </div>
-
-      </div>
+  <!-- OCCUPANT STATUS MESSAGE -->
+  <div class="max-w-3xl mx-auto text-center mt-6" *ngIf="occupantStatus !== 'valid'">
+    <div class="bg-white text-red-600 rounded-lg p-4 mb-4 font-nunito">
+      {{ occupantMessage }}
     </div>
-
-    <ng-template #noRecords>
-      <p class="text-red-500 font-medium">No records found.</p>
-    </ng-template>
-
-    <hr class="my-6">
-
-    <h3 class="text-xl font-bold mb-4">Submit Review</h3>
-    <form [formGroup]="reviewForm" (ngSubmit)="submitReview()" class="space-y-4">
-
-      <div>
-        <label class="block font-semibold mb-1">Reviewer Name:</label>
-        <input type="text" formControlName="reviewer_name" required class="w-full border border-gray-300 rounded p-2">
-      </div>
-
-    
-      <div>
-        <label class="block font-semibold mb-1">
-          1. Which part of the process did Renaissance Park explain or guide clearly for your family?
-        </label>
-        <textarea 
-          formControlName="q1" 
-          required 
-          rows="3" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-      <br>
-      <div>
-        <label class="block font-semibold mb-1">
-          2. How did the Renaissance Park staff support or assist your family during the service?
-        </label>
-        <textarea 
-          formControlName="q2" 
-          required 
-          rows="3" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-      <br>
-      <div>
-        <label class="block font-semibold mb-1">
-          3. What did you notice about how the interment service was handled or organized?
-        </label>
-        <textarea 
-          formControlName="q3" 
-          required 
-          rows="3" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-      <br>
-      <div>
-        <label class="block font-semibold mb-1">
-          4. What stood out to you about the atmosphere or environment of Renaissance Park during your visit?
-        </label>
-        <textarea 
-          formControlName="q4" 
-          required 
-          rows="3" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-      <br>
-      <div>
-        <label class="block font-semibold mb-1">
-          5. What made Renaissance Park practical or convenient for your family? After everything was done, what gave you peace of mind about your experience with Renaissance Park?
-        </label>
-        <textarea 
-          formControlName="q5" 
-          required 
-          rows="3" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-      <br>
-      <div>
-        <label class="block font-semibold mb-1">
-          6. At which step did you feel unsure about what to do next? What was explained late, unclear, or only understood after the service? Which part of the service or coordination felt rushed or slow? Was there a moment when staff instructions were confusing or inconsistent? At what point did your family feel most stressed or overwhelmed? Which rule or requirement surprised you or felt difficult to comply with? Was there anything about the setup, tents, chairs, sound, or space that could be improved? Looking back, what would have made the experience smoother for your family?
-        </label>
-        <textarea 
-          formControlName="q6" 
-          required 
-          rows="6" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-        <br>
-  
-
-      <div>
-        <label class="block font-semibold mb-1">Others:</label>
-        <textarea 
-          formControlName="others" 
-          required 
-          rows="3" 
-          class="w-full border border-gray-300 rounded p-2 resize-none">
-        </textarea>
-      </div>
-
-      <div>
-        <label class="block font-semibold mb-1">FB Username:</label>
-        <input type="text" formControlName="fb_username" class="w-full border border-gray-300 rounded p-2">
-      </div>
-
-      <div>
-        <label class="block font-semibold mb-1">Google Username:</label>
-        <input type="text" formControlName="google_username" class="w-full border border-gray-300 rounded p-2">
-      </div>
-
-        <div>
-          <label class="block font-semibold mb-1">FB Screenshot:</label>
-          <input type="file" (change)="onFbFileChange($event)" class="w-full">
-          <img *ngIf="fbPreview" [src]="fbPreview" class="mt-2 w-32 h-32 object-cover border rounded">
-        </div>
-
-        <div>
-          <label class="block font-semibold mb-1">Google Screenshot:</label>
-          <input type="file" (change)="onGoogleFileChange($event)" class="w-full">
-          <img *ngIf="googlePreview" [src]="googlePreview" class="mt-2 w-32 h-32 object-cover border rounded">
-        </div>
-
-
-
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-        Submit Review
-      </button>
-    </form>
   </div>
+
+
+
+
+<div class="grid grid-cols-3 items-center mb-4">
+  <!-- Left: can be empty or add something later -->
+  <div></div>
+
+  <!-- Center: Logo -->
+  <div class="flex justify-center">
+    <img src="logo.png" alt="Logo" class="h-8 sm:h-8 md:h-10 lg:h-12 w-auto">
+  </div>
+
+  <!-- Right: Language selector -->
+  <div class="flex justify-end">
+    <select [(ngModel)]="selectedLanguage"
+            class="w-20 sm:w-24 border rounded p-2 font-nunito text-sm sm:text-base">
+      <option value="en">English</option>
+      <option value="tl">Tagalog</option>
+      <option value="hil">Hiligaynon</option>
+    </select>
+  </div>
+</div><br>
+
+
+  
+  <!-- OCCUPANT INFO -->
+  <div *ngIf="!submitted" class="max-w-3xl mx-auto text-center mb-4 text-white font-nunito">
+    <p><span class="font-semibold">Interred Name:</span> {{ occupantName }}</p>
+    <p><span class="font-semibold">Date of Interment:</span> {{ intermentDate }}</p>
+  </div>
+
+  <!-- STEP HEADER -->
+  <div *ngIf="!submitted" class="max-w-3xl mx-auto rounded-lg overflow-hidden mb-6">
+    <h2 class="text-3xl font-bold text-white text-center font-nunito">
+      {{ getHeaderText() }}
+    </h2>
+    <p class="text-white text-center font-nunito mt-2">
+      {{ getSubHeaderText() }}
+    </p>
+  </div>
+
+  <!-- FORM & STEPPER -->
+  <form *ngIf="!submitted" [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg p-6 shadow-md">
+
+      <!-- STEP 1: REVIEWER INFO -->
+      <div *ngIf="step === 1">
+        <h3 class="font-semibold mb-3 text-dark font-nunito">Reviewer Information</h3>
+
+        <label class="text-red-600">*</label>
+        <input type="text" formControlName="reviewerName" placeholder="Your Name"
+               class="w-full border rounded p-2 mb-3 font-nunito">
+        <div *ngIf="reviewForm.get('reviewerName')?.touched && reviewForm.get('reviewerName')?.invalid"
+             class="text-red-600 text-sm mb-2">
+          Please input Name.
+        </div>
+
+        <label class="text-red-600">*</label>
+        <input type="text" formControlName="contactNumber" placeholder="Contact Number"
+               class="w-full border rounded p-2 mb-3 font-nunito">
+        <div *ngIf="reviewForm.get('contactNumber')?.touched && reviewForm.get('contactNumber')?.invalid"
+             class="text-red-600 text-sm mb-2">
+          Please input Contact number.
+        </div>
+
+        <div class="flex justify-end mt-6">
+          <button type="button" 
+                  (click)="next()"
+                  [disabled]="reviewForm.get('reviewerName')?.invalid || reviewForm.get('contactNumber')?.invalid"
+                  class="bg-secondary py-2 px-6 rounded text-white font-semibold font-nunito hover:bg-brown-dark disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: PUBLIC REVIEW -->
+      <div *ngIf="step === 2">
+        <h3 class="font-semibold mb-3 text-dark font-nunito">Public Review</h3>
+
+<div class="mb-4">
+  <!-- Question line with reload button -->
+  <div class="flex items-start justify-between gap-3">
+    <p class="text-dark-700 font-bold font-nunito flex-1 min-w-0">
+      {{ currentFocusQuestion }}
+    </p>
+
+    <!-- Reload button -->
+    <button type="button"
+            (click)="nextQuestion()"
+            title="Change question"
+            class="w-8 h-8 bg-no-repeat bg-center bg-contain hover:opacity-70"
+            style="background-image: url('reload.png');">
+    </button>
+  </div>
+
+  <!-- Select button under the question -->
+  <div class="mt-2">
+    <button type="button"
+            (click)="selectQuestion(currentFocusQuestion)"
+            [disabled]="selectedFocusQuestion === currentFocusQuestion"
+            class="bg-primary-green text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-300">
+      {{ selectedFocusQuestion === currentFocusQuestion ? 'Selected' : 'Select' }}
+    </button>
+  </div>
+</div>
+
+
+        <p class="text-sm text-gray-500 font-nunito mb-3">
+          This question helps us understand your experience better. Kindly keep your response related to it.
+        </p>
+
+        <!-- Facebook -->
+        <label class="w-full inline-block bg-secondary text-white py-2 px-4 rounded cursor-pointer text-center font-nunito hover:bg-brown-dark mb-2">
+          Upload Facebook Screenshot
+          <input type="file" (change)="onFbChange($event)" class="hidden">
+        </label>
+        <div *ngIf="fbPreview" class="mt-2 mb-4">
+          <div class="flex items-center gap-2">
+            <img [src]="fbPreview" class="w-24 h-24 object-cover border rounded">
+
+            <div class="flex flex-col sm:flex-row gap-2 mb-2">
+              <label class="flex-1 bg-secondary text-white py-2 px-4 rounded cursor-pointer text-center font-nunito hover:bg-brown-dark">
+                Change
+                <input type="file" (change)="onFbChange($event)" class="hidden">
+              </label>
+              <button type="button" (click)="removeFb()" class="flex-1 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google -->
+        <label class="w-full inline-block bg-secondary text-white py-2 px-4 rounded cursor-pointer text-center font-nunito hover:bg-brown-dark mb-4">
+          {{ googlePreview ? 'Change Google Screenshot' : 'Upload Google Screenshot' }}
+          <input type="file" (change)="onGoogleChange($event)" class="hidden">
+        </label>
+        <div *ngIf="googlePreview" class="mt-2 mb-4">
+          <div class="flex items-center gap-2">
+            <img [src]="googlePreview" class="w-24 h-24 object-cover border rounded">
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+              <label class="flex-1 bg-secondary text-white py-2 px-4 rounded cursor-pointer text-center font-nunito hover:bg-brown-dark">
+                Change
+                <input type="file" (change)="onGoogleChange($event)" class="hidden">
+              </label>
+              <button type="button" (click)="removeGoogle()" class="flex-1 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-6">
+          <button type="button" (click)="back()" class="bg-gray-300 py-2 px-6 rounded text-dark font-semibold font-nunito hover:bg-gray-400">
+            Back
+          </button>
+          <button type="button" (click)="next()"
+                  [disabled]="!fbPreview && !googlePreview"
+                  class="bg-secondary py-2 px-6 rounded text-white font-semibold font-nunito hover:bg-brown-dark disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: PRIVATE FEEDBACK -->
+      <div *ngIf="step === 3">
+        <h3 class="font-semibold mb-3 text-dark font-nunito">Private Feedback</h3>
+
+        <div class="mb-4">
+          <!-- Private FAQ line with reload button -->
+          <div class="flex items-start justify-between gap-3">
+            <p class="text-dark-700 font-bold font-nunito flex-1 min-w-0">
+              {{ currentPrivateFaq }}
+            </p>
+
+            <!-- Reload button -->
+            <button type="button"
+                    (click)="nextPrivateFaq()"
+                    title="Change question"
+                    class="w-8 h-8 bg-no-repeat bg-center bg-contain hover:opacity-70"
+                    style="background-image: url('reload.png');">
+            </button>
+          </div>
+
+          <!-- Select button under the question -->
+          <div class="mt-2">
+            <button type="button"
+                    (click)="selectPrivateFaq(currentPrivateFaq)"
+                    [disabled]="selectedPrivateFaq === currentPrivateFaq"
+                    class="bg-primary-green text-white px-3 py-1 rounded hover:bg-green-600 disabled:bg-gray-300">
+              {{ selectedPrivateFaq === currentPrivateFaq ? 'Selected' : 'Select' }}
+            </button>
+          </div>
+        </div>
+
+
+
+        <p class="text-sm text-gray-500 font-nunito mb-3">
+          This question helps us understand your experience better. Kindly keep your response related to it.
+        </p>
+
+        <textarea formControlName="privateFaqAnswer" rows="4" placeholder="Your answer here..."
+                  class="w-full border rounded p-2 mb-3 font-nunito"></textarea>
+          Any other suggestions...
+        <textarea formControlName="privateOthers" rows="5" placeholder="Your answer here..."
+                  class="w-full border rounded p-2 mb-3 font-nunito"></textarea>
+
+        <div class="flex justify-between mt-6">
+          <button type="button" (click)="back()" class="bg-gray-300 py-2 px-6 rounded text-dark font-semibold font-nunito hover:bg-gray-400">
+            Back
+          </button>
+          <button type="submit" class="bg-secondary py-2 px-6 rounded text-white font-semibold font-nunito hover:bg-brown-dark">
+            Submit
+          </button>
+        </div>
+      </div>
+
+    </div> <!-- END form container -->
+  </form>
+
+  <!-- THANK YOU MESSAGE -->
+  <div *ngIf="submitted" class="max-w-3xl mx-auto bg-white rounded-lg p-6 shadow-md text-center">
+    <h2 class="text-2xl font-bold text-dark font-nunito mb-4">Thank You!</h2>
+    <p class="font-nunito mb-4">
+      Your review has been successfully submitted. We appreciate your feedback.
+    </p>
+  </div>
+
+</div>
