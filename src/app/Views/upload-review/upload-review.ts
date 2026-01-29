@@ -61,10 +61,14 @@ export class UploadReviewComponent implements OnInit {
   googlePreview: string | null = null;
 
   // Occupant Info
-  occupantName: string = '';
+    occupantName: string = '';
+
+  // NEW property to hold multiple names
+  occupantNames: string[] = [];
+
   intermentDate: string = '';
   documentNo: string = '';
-  occupantStatus: 'valid' | 'wrongLink' | 'expired' = 'valid';
+  occupantStatus: 'valid' | 'wrongLink' | 'expired' = 'wrongLink';
   occupantMessage: string = '';
 
   // Language
@@ -96,35 +100,49 @@ export class UploadReviewComponent implements OnInit {
     });
   }
 
-  // Load occupant info
-  loadIntermentContext() {
-    const occupant = this.route.snapshot.paramMap.get('occupant')!;
-    this.reviewService.getInterments(occupant).subscribe(
-      (res: ReviewContext[]) => {
-        if (res.length > 0) {
-          this.occupantName = res[0].occupant;
-          this.intermentDate = res[0].date_interment;
-          this.documentNo = res[0].documentno;
-          this.occupantStatus = 'valid';
-          this.reviewForm.enable();
-        } else {
-          this.occupantStatus = 'wrongLink';
-          this.occupantMessage = '❌ The link is invalid or the Interred Name does not exist. The review form is disabled.';
-          this.reviewForm.disable();
-        }
-      },
-      (err) => {
-        if (err.status === 410) {
-          this.occupantStatus = 'expired';
-          this.occupantMessage = '⏳ This review link has expired. The form is disabled.';
-        } else {
-          this.occupantStatus = 'wrongLink';
-          this.occupantMessage = '❌ The link is invalid or the Interred Name does not exist. The review form is disabled.';
-        }
+loadIntermentContext() {
+  const documentNo = this.route.snapshot.paramMap.get('document_no')!;
+
+  this.reviewService.getInterments(documentNo).subscribe(
+    (res: ReviewContext[]) => {
+      if (res.length > 0) {
+        this.occupantNames = res.map(r => r.occupant ?? r.name1);
+        this.occupantName = this.occupantNames[0];
+        this.intermentDate = res[0].date_interment;
+        this.documentNo = res[0].documentno;
+        this.occupantStatus = 'valid';
+        this.reviewForm.enable();
+      } else {
+        this.occupantStatus = 'wrongLink';
+        this.occupantMessage = '❌ The link is invalid or the Interred Name does not exist. The form is disabled.';
         this.reviewForm.disable();
       }
-    );
-  }
+    },
+    (err) => {
+      console.error('HTTP Error:', err);
+
+      if (err.status === 403) {
+        this.occupantStatus = 'expired';
+        this.occupantMessage = '⏳ This review link has expired. The form is disabled.';
+      } else if (err.status === 404) {
+        this.occupantStatus = 'wrongLink';
+        this.occupantMessage = '❌ No records found for this document number. The review form is disabled.';
+      } else if (err.status === 500) {
+        this.occupantStatus = 'wrongLink';
+        this.occupantMessage = '⚠️ Invalid record. The review form is disabled.';
+      } else {
+        this.occupantStatus = 'wrongLink';
+        this.occupantMessage = '⚠️ An unexpected error occurred. The review form is disabled.';
+      }
+
+      this.reviewForm.disable();
+    }
+  );
+}
+
+   
+
+
 
   // Randomly pick required questions
   pickRandomRequiredQuestions() {

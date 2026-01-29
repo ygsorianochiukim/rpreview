@@ -9,16 +9,16 @@ import { environment } from '../../../environments/environment';
 })
 export class ReviewService {
   private reviewUrl = `${environment.apiUrl}/review`;
-  private intermentsUrl = `${environment.apiUrl}/interments`;
+  private intermentsUrl = `${environment.apiUrl}/intermentsReviewLink`; // updated to match new backend route
 
   constructor(private http: HttpClient) {}
 
-  getInterments(occupant: string): Observable<ReviewContext[]> {
-    return this.http.get<ReviewContext[]>(`${this.intermentsUrl}/${occupant}`);
+  // Updated parameter name from 'occupant' -> 'documentNo'
+  getInterments(documentNo: string): Observable<ReviewContext[]> {
+    return this.http.get<ReviewContext[]>(`${this.intermentsUrl}/${documentNo}`);
   }
 
   submitReview(formData: FormData): Observable<any> {
     return this.http.post(this.reviewUrl, formData);
   }
 }
-
