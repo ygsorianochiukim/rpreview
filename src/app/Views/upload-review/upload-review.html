@@ -34,7 +34,9 @@
   
   <!-- OCCUPANT INFO -->
   <div *ngIf="!submitted" class="max-w-3xl mx-auto text-center mb-4 text-white font-nunito">
-    <p><span class="font-semibold">Interred Name:</span> {{ occupantName }}</p>
+    <ul>
+     <li *ngFor="let name of occupantNames">{{ name }}</li>
+    </ul>
     <p><span class="font-semibold">Date of Interment:</span> {{ intermentDate }}</p>
   </div>
 
@@ -235,4 +237,23 @@
     </p>
   </div>
 
+</div>
+
+
+<!-- ERROR MESSAGE -->
+<div class="min-h-screen bg-cover bg-center px-4 md:px-6 lg:px-8 py-6" 
+     style="background-image: url('background.webp');">
+
+  <div class="max-w-3xl mx-auto text-center mt-6" *ngIf="occupantStatus !== 'valid'">
+    <div class="bg-white text-red-600 rounded-lg p-4 mb-4 font-nunito">
+      {{ occupantMessage }}
+    </div>
+  </div>
+
+  <!-- Everything below shows ONLY if link is valid -->
+  <ng-container *ngIf="occupantStatus === 'valid'">
+
+
+
+  </ng-container>
 </div>
