@@ -1,0 +1,121 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4 md:px-6 lg:px-8 py-6"
+     style="background-image: url('background.webp');">
+
+  <!-- Top Logo -->
+  <div class="flex justify-center mb-6 w-full">
+    <img src="logo.png" alt="Logo" class="h-10 w-auto mx-auto">
+  </div>
+
+  <!-- Occupant Status / Error -->
+  <div class="w-full max-w-3xl text-center mb-4" *ngIf="occupantStatus !== 'valid'">
+    <div class="bg-white/70 text-red-600 rounded-lg p-4 font-nunito shadow backdrop-blur-sm">
+      {{ occupantMessage }}
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <ng-container *ngIf="occupantStatus === 'valid'">
+    <div class="w-full max-w-3xl bg-white/79 backdrop-blur-md rounded-2xl shadow-xl p-8 text-center">
+
+      <!-- Header -->
+      <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 font-nunito mb-2">
+        A Space to Remember
+      </h2>
+      <p class="text-gray-600 font-nunito mb-6 leading-relaxed">
+        Share photos in honor of your loved ones.
+      </p>
+
+      <!-- Success / Error Messages -->
+      <div *ngIf="message" class="bg-green-50 text-green-700 rounded p-3 mb-4 font-nunito">
+        {{ message }}
+      </div>
+      <div *ngIf="error" class="bg-red-50 text-red-700 rounded p-3 mb-4 font-nunito">
+        {{ error }}
+      </div>
+
+      <!-- Upload Form -->
+      <form [formGroup]="uploadForm" (ngSubmit)="submitUpload()" class="text-left space-y-8">
+
+        <div formArrayName="records">
+          <div *ngFor="let record of records.controls; let i = index" [formGroupName]="i"
+               class="border rounded-xl p-4 mb-6 shadow-sm bg-white">
+
+            <!-- Occupant Name -->
+            <div class="mb-2 font-nunito text-gray-800">
+              <label class="block font-medium mb-1 text-gray-700 text-sm sm:text-base">
+                Occupant: {{ record.value.occupant_name }}
+              </label>
+            </div>
+
+            <!-- Existing Photo (Show when not editing) -->
+            <div *ngIf="record.value.preview && !record.value.editing" class="mb-4 text-center">
+              <img [src]="record.value.preview" alt="Lapida Photo"
+                   class="mx-auto rounded-xl shadow max-h-64 w-auto">
+              <button type="button" (click)="toggleEdit(i)"
+                      class="mt-2 text-sm text-gray-600 underline font-nunito">
+                Edit / Replace Photo
+              </button>
+            </div>
+
+            <!-- Uploader Name & Photo Input (Show when editing or new) -->
+            <div *ngIf="!record.value.preview || record.value.editing">
+              <!-- Uploader Name -->
+              <div class="mb-4">
+                <label class="font-medium block mb-2 text-gray-700 text-sm sm:text-base">
+                  Your Name <span class="text-red-600">*</span>
+                </label>
+                <input type="text" formControlName="uploader_name" placeholder="Enter your name"
+                       class="w-full border rounded-xl px-4 py-3 text-base font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400">
+              </div>
+
+              <!-- Photo Input -->
+              <div class="mb-4">
+                <label class="font-medium block mb-2 text-gray-700 text-sm sm:text-base">
+                  Lapida Photo <span class="text-red-600">*</span>
+                </label>
+                <label class="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer text-center text-gray-600 hover:border-gray-400 transition">
+                  <span class="font-medium font-nunito">Tap to select photo</span>
+                  <span class="text-xs text-gray-500 mt-1">Camera or gallery</span>
+                  <input type="file" accept="image/*" class="hidden" (change)="onPhotoChange($event, i)">
+                </label>
+
+                <!-- Preview of New Photo -->
+                <div *ngIf="record.value.preview" class="mt-4 text-center">
+                  <img [src]="record.value.preview" alt="Photo Preview"
+                       class="mx-auto rounded-xl shadow max-h-64 w-auto">
+                  <button type="button" (click)="removePhoto(i)"
+                          class="mt-2 text-sm text-gray-600 underline font-nunito">
+                    Remove photo
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Submit / Back Buttons -->
+        <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
+          <button type="submit" [disabled]="loading"
+                  class="w-full sm:w-auto bg-secondary hover:bg-brown-dark text-white px-6 py-4 sm:py-3 rounded-full font-semibold font-nunito text-base transition">
+            {{ loading ? 'Uploading with care…' : 'Submit All Photos' }}
+          </button>
+          <button type="button" (click)="goBackToLanding()"
+                  class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-4 sm:py-3 rounded-full font-semibold font-nunito text-base transition">
+            Back to Home
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- Review Button -->
+    <div class="max-w-3xl mx-auto flex justify-center gap-4 mt-6 mb-6">
+      <button (click)="goToReview()"
+              class="bg-secondary text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition font-nunito">
+        Share a Review
+      </button>
+    </div>
+  </ng-container>
+</div>

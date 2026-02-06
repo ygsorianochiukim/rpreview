@@ -1,7 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray
+} from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReviewService } from '../../Services/review/review';
 import { ReviewContext } from '../../Models/review/review-context.model';
 
@@ -13,12 +20,20 @@ import { ReviewContext } from '../../Models/review/review-context.model';
 })
 export class UploadReviewComponent implements OnInit {
 
-  submitted: boolean = false;
-
-  step: number = 1;
+  /** FORM & SUBMISSION */
   reviewForm!: FormGroup;
+  submitted: boolean = false;
+  step: number = 1;
 
-  // Public Question
+  /** DOCUMENT & OCCUPANT INFO */
+  documentNo: string = '';
+  intermentDate: string = '';
+  occupantName: string = '';
+  occupantNames: string[] = [];
+  occupantStatus: 'valid' | 'wrongLink' | 'expired' = 'wrongLink';
+  occupantMessage: string = '';
+
+  /** PUBLIC QUESTIONS */
   selectedFocusQuestion: string = '';
   requiredFocusQuestions: string[] = [
     'Which part of the process did Renaissance Park explain clearly?',
@@ -26,12 +41,13 @@ export class UploadReviewComponent implements OnInit {
     'What stood out the most about the interment service?',
     'What made Renaissance Park practical or easy for your family?',
     'What gave you peace of mind after the service?'
-]
-;
+  ];
   currentIndex: number = 0;
   currentFocusQuestion: string = this.requiredFocusQuestions[0];
+  optionalFocusFaq: string[] = [];
+  showOptionalFaq: boolean = false;
 
-  // Private FAQ
+  /** PRIVATE FAQ */
   selectedPrivateFaq: string = '';
   requiredPrivateFaqs: string[] = [
     'Which part of the service felt slow or rushed?',
@@ -42,41 +58,25 @@ export class UploadReviewComponent implements OnInit {
     'Which rule or requirement was surprising or hard to follow?',
     'Was there anything about the setup, chairs, tents, or sound that could be better?',
     'Looking back, what would have made the service smoother for your family?'
-]
-;
+  ];
   privateIndex: number = 0;
   currentPrivateFaq: string = this.requiredPrivateFaqs[0];
-
-  // Step 1 optional FAQ arrays
-  optionalFocusFaq: string[] = [];
-  showOptionalFaq: boolean = false;
-
   optionalPrivateFaq: string[] = [];
   showPrivateFaq: boolean = false;
 
-  // STEP 2: Screenshots
+  /** FILES */
   fbFile?: File;
   googleFile?: File;
   fbPreview: string | null = null;
   googlePreview: string | null = null;
 
-  // Occupant Info
-    occupantName: string = '';
-
-  // NEW property to hold multiple names
-  occupantNames: string[] = [];
-
-  intermentDate: string = '';
-  documentNo: string = '';
-  occupantStatus: 'valid' | 'wrongLink' | 'expired' = 'wrongLink';
-  occupantMessage: string = '';
-
-  // Language
+  /** LANGUAGE */
   selectedLanguage: 'en' | 'tl' | 'hil' = 'en';
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private router: Router,
     private reviewService: ReviewService
   ) {}
 
@@ -86,7 +86,8 @@ export class UploadReviewComponent implements OnInit {
     this.pickRandomRequiredQuestions();
   }
 
-  buildForm() {
+  /** Build Reactive Form */
+  private buildForm(): void {
     this.reviewForm = this.fb.group({
       reviewerName: ['', Validators.required],
       contactNumber: ['', Validators.required],
@@ -100,119 +101,102 @@ export class UploadReviewComponent implements OnInit {
     });
   }
 
-loadIntermentContext() {
-  const documentNo = this.route.snapshot.paramMap.get('document_no')!;
-
-  this.reviewService.getInterments(documentNo).subscribe(
-    (res: ReviewContext[]) => {
-      if (res.length > 0) {
-        this.occupantNames = res.map(r => r.occupant ?? r.name1);
-        this.occupantName = this.occupantNames[0];
-        this.intermentDate = res[0].date_interment;
-        this.documentNo = res[0].documentno;
-        this.occupantStatus = 'valid';
-        this.reviewForm.enable();
-      } else {
-        this.occupantStatus = 'wrongLink';
-        this.occupantMessage = '❌ The link is invalid or the Interred Name does not exist. The form is disabled.';
+  /** Load occupant & interment info */
+  private loadIntermentContext(): void {
+    const documentNo = this.route.snapshot.paramMap.get('document_no')!;
+    this.reviewService.getInterments(documentNo).subscribe(
+      (res: ReviewContext[]) => {
+        if (res.length > 0) {
+          this.documentNo = res[0].documentno;
+          this.intermentDate = res[0].date_interment;
+          this.occupantNames = res.map(r => r.occupant ?? r.name1);
+          this.occupantName = this.occupantNames[0];
+          this.occupantStatus = 'valid';
+          this.reviewForm.enable();
+        } else {
+          this.setInvalidLink('❌ The link is invalid or the Interred Name does not exist.');
+        }
+      },
+      (err) => {
+        if (err.status === 403) {
+          this.setInvalidLink('⏳ This review link has expired.');
+          this.occupantStatus = 'expired';
+        } else {
+          this.setInvalidLink('⚠️ No valid record found. The review form is disabled.');
+        }
         this.reviewForm.disable();
       }
-    },
-    (err) => {
-      console.error('HTTP Error:', err);
+    );
+  }
 
-      if (err.status === 403) {
-        this.occupantStatus = 'expired';
-        this.occupantMessage = '⏳ This review link has expired. The form is disabled.';
-      } else if (err.status === 404) {
-        this.occupantStatus = 'wrongLink';
-        this.occupantMessage = '❌ No records found for this document number. The review form is disabled.';
-      } else if (err.status === 500) {
-        this.occupantStatus = 'wrongLink';
-        this.occupantMessage = '⚠️ Invalid record. The review form is disabled.';
-      } else {
-        this.occupantStatus = 'wrongLink';
-        this.occupantMessage = '⚠️ An unexpected error occurred. The review form is disabled.';
-      }
+  /** Set invalid link state */
+  private setInvalidLink(message: string) {
+    this.occupantStatus = 'wrongLink';
+    this.occupantMessage = message;
+  }
 
-      this.reviewForm.disable();
-    }
-  );
-}
-
-   
-
-
-
-  // Randomly pick required questions
-  pickRandomRequiredQuestions() {
-    // Public Focus Question
+  /** Randomize required questions */
+  private pickRandomRequiredQuestions(): void {
+    // Public Questions
     const shuffledFocus = [...this.requiredFocusQuestions].sort(() => 0.5 - Math.random());
     this.currentFocusQuestion = shuffledFocus[0];
-    this.selectedFocusQuestion = this.currentFocusQuestion; // pre-select
+    this.selectedFocusQuestion = this.currentFocusQuestion;
     this.optionalFocusFaq = shuffledFocus.slice(1);
     this.reviewForm.patchValue({ focusQuestion: this.selectedFocusQuestion });
 
-    // Private FAQ
+    // Private Questions
     const shuffledPrivate = [...this.requiredPrivateFaqs].sort(() => 0.5 - Math.random());
     this.currentPrivateFaq = shuffledPrivate[0];
-    this.selectedPrivateFaq = this.currentPrivateFaq; // pre-select
+    this.selectedPrivateFaq = this.currentPrivateFaq;
     this.optionalPrivateFaq = shuffledPrivate.slice(1);
     this.reviewForm.patchValue({ privateFaqSelected: [this.selectedPrivateFaq] });
   }
 
-  // Navigate questions
-  nextQuestion() {
-    this.currentIndex++;
-    if (this.currentIndex >= this.requiredFocusQuestions.length) this.currentIndex = 0;
+  /** Navigate public & private questions */
+  nextQuestion(): void {
+    this.currentIndex = (this.currentIndex + 1) % this.requiredFocusQuestions.length;
     this.currentFocusQuestion = this.requiredFocusQuestions[this.currentIndex];
   }
 
-  nextPrivateFaq() {
-    this.privateIndex++;
-    if (this.privateIndex >= this.requiredPrivateFaqs.length) this.privateIndex = 0;
+  nextPrivateFaq(): void {
+    this.privateIndex = (this.privateIndex + 1) % this.requiredPrivateFaqs.length;
     this.currentPrivateFaq = this.requiredPrivateFaqs[this.privateIndex];
   }
 
-  selectQuestion(question: string) {
+  selectQuestion(question: string): void {
     this.selectedFocusQuestion = question;
     this.reviewForm.patchValue({ focusQuestion: question });
   }
 
-  selectPrivateFaq(question: string) {
+  selectPrivateFaq(question: string): void {
     this.selectedPrivateFaq = question;
     this.reviewForm.patchValue({ privateFaqSelected: question });
   }
 
-  // FormArrays
-  get optionalFocusFaqArray(): FormArray {
-    return this.reviewForm.get('optionalFocusFaq') as FormArray;
-  }
+  /** FormArrays helpers */
+  get optionalFocusFaqArray(): FormArray { return this.reviewForm.get('optionalFocusFaq') as FormArray; }
+  get privateFaqArray(): FormArray { return this.reviewForm.get('privateFaqSelected') as FormArray; }
 
-  onOptionalFocusChange(event: any) {
+  onOptionalFocusChange(event: any): void {
     const faq = event.target.value;
     if (event.target.checked) this.optionalFocusFaqArray.push(this.fb.control(faq));
     else {
-      const index = this.optionalFocusFaqArray.controls.findIndex(ctrl => ctrl.value === faq);
+      const index = this.optionalFocusFaqArray.controls.findIndex(c => c.value === faq);
       if (index >= 0) this.optionalFocusFaqArray.removeAt(index);
     }
   }
 
-  get privateFaqArray(): FormArray {
-    return this.reviewForm.get('privateFaqSelected') as FormArray;
-  }
-
-  onPrivateFaqChange(event: any) {
+  onPrivateFaqChange(event: any): void {
     const faq = event.target.value;
     if (event.target.checked) this.privateFaqArray.push(this.fb.control(faq));
     else {
-      const index = this.privateFaqArray.controls.findIndex(ctrl => ctrl.value === faq);
+      const index = this.privateFaqArray.controls.findIndex(c => c.value === faq);
       if (index >= 0) this.privateFaqArray.removeAt(index);
     }
   }
 
-  // File uploads
-  onFbChange(event: any) {
+  /** File uploads */
+  onFbChange(event: any): void {
     this.fbFile = event.target.files[0];
     if (this.fbFile) {
       const reader = new FileReader();
@@ -221,7 +205,7 @@ loadIntermentContext() {
     }
   }
 
-  onGoogleChange(event: any) {
+  onGoogleChange(event: any): void {
     this.googleFile = event.target.files[0];
     if (this.googleFile) {
       const reader = new FileReader();
@@ -230,14 +214,15 @@ loadIntermentContext() {
     }
   }
 
-  removeFb() { this.fbFile = undefined; this.fbPreview = null; }
-  removeGoogle() { this.googleFile = undefined; this.googlePreview = null; }
+  removeFb(): void { this.fbFile = undefined; this.fbPreview = null; }
+  removeGoogle(): void { this.googleFile = undefined; this.googlePreview = null; }
 
-  // Navigation
-  next() { if (this.step < 3) this.step++; }
-  back() { if (this.step > 1) this.step--; }
+  /** Navigation */
+  next(): void { if (this.step < 3) this.step++; }
+  back(): void { if (this.step > 1) this.step--; }
 
-  submitReview() {
+  /** Submit Review */
+  submitReview(): void {
     const reviewerName = this.reviewForm.value.reviewerName;
     const contactNumber = this.reviewForm.value.contactNumber;
 
@@ -253,13 +238,8 @@ loadIntermentContext() {
       return;
     }
 
-    if (!this.selectedFocusQuestion) {
-      alert('Please select a public question.');
-      return;
-    }
-
-    if (!this.selectedPrivateFaq) {
-      alert('Please select a private question.');
+    if (!this.selectedFocusQuestion || !this.selectedPrivateFaq) {
+      alert('Please select both public and private questions.');
       return;
     }
 
@@ -276,21 +256,33 @@ loadIntermentContext() {
     if (this.googleFile) formData.append('google_screenshot', this.googleFile);
 
     this.reviewService.submitReview(formData).subscribe({
-      next: () => { this.submitted = true; },
+      next: () => this.submitted = true,
       error: (err) => {
         const code = err.error?.code;
         switch (code) {
-          case 'MAX_REVIEWS': alert('❌ Already reached the maximum number of reviews. Thank you.'); break;
-          case 'SCREENSHOT_REQUIRED': alert('📸 Please upload at least one screenshot (Facebook or Google). Thank you.'); break;
-          case 'DUPLICATE_REVIEW': alert('⚠️ You have already submitted feedback for this service. Thank you.'); break;
+          case 'MAX_REVIEWS': alert('❌ Maximum reviews reached. Thank you.'); break;
+          case 'SCREENSHOT_REQUIRED': alert('📸 Please upload at least one screenshot.'); break;
+          case 'DUPLICATE_REVIEW': alert('⚠️ You already submitted feedback.'); break;
           default: alert(err.error?.message || 'Submission failed. Please try again.');
         }
       }
     });
   }
 
-  // Language microcopy
-  getHeaderText() {
+  /** Navigation buttons */
+  goBackToHome(): void {
+    if (!this.documentNo) return;
+    this.router.navigate(['/interments', this.documentNo]); // Adjust route
+  }
+
+  goToUploadPhoto() {
+     if (!this.documentNo) return;
+      this.router.navigate(['/intermentsUploadInterredPhotoLink', this.documentNo.trim()]);
+    } 
+  
+
+  /** Language helpers */
+  getHeaderText(): string {
     return this.selectedLanguage === 'tl'
       ? 'Pinahahalagahan namin ang iyong puna'
       : this.selectedLanguage === 'hil'
@@ -298,7 +290,7 @@ loadIntermentContext() {
       : 'We appreciate your feedback';
   }
 
-  getSubHeaderText() {
+  getSubHeaderText(): string {
     return this.selectedLanguage === 'tl'
       ? 'Ilang pamilya ang nag-iiwan ng maikling rekomendasyon sa aming pahina. Maaari ka ring magbahagi ng pribadong puna o alalahanin.'
       : this.selectedLanguage === 'hil'
