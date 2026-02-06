@@ -1,0 +1,52 @@
+<div class="min-h-screen flex flex-col items-center justify-start bg-cover bg-center px-4 md:px-6 lg:px-8 py-6"
+     style="background-image: url('background.webp');">
+
+  <!-- Top: Logo -->
+  <div class="flex justify-center mt-4 mb-6 w-full">
+    <img src="logo.png" alt="Renaissance Park Logo" class="h-10 w-auto mx-auto">
+  </div>
+
+  <!-- FULL PAGE ERROR / STATUS MESSAGE -->
+  <div *ngIf="occupantStatus === 'wrongLink' || occupantStatus === 'expired'" 
+       class="w-full max-w-md bg-white/80 rounded-xl shadow-lg p-6 text-center mb-6 backdrop-blur-sm">
+    <p class="text-red-600 font-bold text-xl mb-2">We're sorry…</p>
+    <p class="font-nunito text-gray-700 leading-relaxed">
+      This link is invalid or has expired. Please contact us for assistance.
+    </p>
+  </div>
+
+  <!-- MAIN CONTENT / VALID LINK -->
+  <div *ngIf="occupantStatus === 'valid'" 
+       class="w-full max-w-md bg-white/80 rounded-xl shadow-lg p-8 text-center backdrop-blur-sm">
+
+    <!-- OCCUPANT INFO -->
+    <div class="mb-6 font-nunito text-gray-800">
+      <ul class="mb-2 list-disc list-inside">
+        <li *ngFor="let name of occupantNames">{{ name }}</li>
+      </ul>
+      <p class="text-gray-700"><span class="font-semibold">Date of Interment:</span> {{ intermentDate }}</p>
+    </div>
+
+    <!-- Emotional Heading -->
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 font-nunito">
+      A Place to Remember
+    </h1>
+    <p class="text-gray-700 mb-6 font-nunito leading-relaxed">
+      Honor your loved one with care and respect.<br>
+      Share a memory or a photo at your own pace.
+    </p>
+
+    <!-- Buttons for Review / Photo Upload -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button (click)="goToReview()"
+              class="bg-secondary text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition font-nunito">
+        Share a Review
+      </button>
+      <button (click)="goToUploadPhoto()"
+              class="bg-secondary text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-400 transition font-nunito">
+        Upload a Photo
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="slideshow-container">
+
+  <h2>Upload Slideshow Photos</h2>
+
+  <!-- Occupant Info -->
+  <div *ngIf="occupantStatus === 'valid'" class="occupant-info">
+    <p><strong>Occupant:</strong> {{ occupantName }}</p>
+    <p><strong>Interment Date:</strong> {{ intermentDate | date }}</p>
+  </div>
+
+  <div *ngIf="occupantStatus !== 'valid'" class="message invalid">
+    {{ occupantMessage }}
+  </div>
+
+  <!-- Error / Success -->
+  <div *ngIf="error" class="message error">{{ error }}</div>
+  <div *ngIf="message" class="message success">{{ message }}</div>
+
+  <!-- Upload Form -->
+  <form [formGroup]="uploadForm" (ngSubmit)="submitUpload()">
+
+    <label>
+      Your Name:
+      <input type="text" formControlName="uploader_name" placeholder="Uploader Name">
+    </label>
+
+    <label>
+      Select Photos (Multiple):
+      <input type="file" multiple accept="image/*" (change)="onSlideshowFilesChange($event)">
+    </label>
+
+    <!-- Preview Selected -->
+    <div class="preview-grid" *ngIf="slideshowPreviews.length">
+      <div class="preview-item" *ngFor="let preview of slideshowPreviews; let i = index">
+        <img [src]="preview" alt="Preview">
+        <button type="button" (click)="removeSelectedFile(i)">Remove</button>
+      </div>
+    </div>
+
+    <!-- Existing Photos -->
+    <div class="preview-grid" *ngIf="existingPhotos.length">
+      <div class="preview-item" *ngFor="let photo of existingPhotos">
+        <img [src]="photo" alt="Existing Photo">
+        <button type="button" (click)="deleteExistingPhoto(photo)">Delete</button>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Uploading...' : 'Upload Slideshow' }}
+    </button>
+  </form>
+
+  <!-- Navigation -->
+  <div class="navigation">
+    <button (click)="goBackToLanding()">Back</button>
+    <button (click)="goToReview()">Go to Review</button>
+  </div>
+
+</div>
