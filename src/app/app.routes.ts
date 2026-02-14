@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'intermentsUploadInterredPhotoLink/:document_no', component: UploadInterredPhotoComponent },
 
   // Slideshow upload route
-  { path: 'slideshow/for-slide-show/:document_no', component: SlideshowComponent },
+  { path: 'slideshow/:document_no', component: SlideshowComponent },
 
   // Wildcard: redirect to landing page
   { path: '**', redirectTo: 'interments', pathMatch: 'full' }

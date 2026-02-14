@@ -21,9 +21,13 @@
       <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 font-nunito mb-2">
         A Space to Remember
       </h2>
-      <p class="text-gray-600 font-nunito mb-6 leading-relaxed">
-        Share photos in honor of your loved ones.
+      <p class="text-gray-600 font-nunito mb-6 leading-relaxed text-sm sm:text-base">
+        To honor your loved one beautifully, please choose a clear photo of one person only. 
+        The face should be sharp, centered, and mostly facing forward. 
+        Kindly avoid blurry images, group photos, or photos where the face is covered or cropped. 
+        This helps us ensure the engraving and shared memories are preserved with care.
       </p>
+
 
       <!-- Success / Error Messages -->
       <div *ngIf="message" class="bg-green-50 text-green-700 rounded p-3 mb-4 font-nunito">
@@ -70,6 +74,13 @@
 
               <!-- Photo Input -->
               <div class="mb-4">
+                <div *ngIf="loading" class="flex justify-center mb-4">
+                  <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                  <span class="ml-2 text-blue-700 font-nunito">Validating photo...</span>
+                </div>
                 <label class="font-medium block mb-2 text-gray-700 text-sm sm:text-base">
                   Lapida Photo <span class="text-red-600">*</span>
                 </label>

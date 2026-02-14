@@ -30,6 +30,12 @@ export class IntermentPhotoService {
   getByDocumentNo(documentNo: string): Observable<any> {
     return this.http.get(`${this.uploadUrl}/by-document/${documentNo}`);
   }
+
+    /** Validate photo before final upload */
+  validatePhoto(formData: FormData): Observable<any> {
+    // make sure the backend route exists: POST /api/upload-photos/validate-photo
+    return this.http.post(`${this.uploadUrl}/validate-photo`, formData);
+  }
 }
 
 /** Context model for upload (currently empty, can be extended) */

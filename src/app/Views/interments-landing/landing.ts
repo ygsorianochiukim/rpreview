@@ -77,4 +77,13 @@ export class IntermentsLandingComponent implements OnInit {
       alert('Please enter a valid Document No.');
     }
   }
+
+goToUploadSlideShowPhoto(): void {
+ if (this.documentNo.trim()) {
+    this.router.navigate(['/slideshow', this.documentNo.trim()]);
+  } else {
+    window.alert('❌ Please enter a valid Document Number.');
+  }
+}
+
 }

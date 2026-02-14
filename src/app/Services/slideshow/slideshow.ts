@@ -10,7 +10,7 @@ export class SlideshowService {
 
   private readonly apiUrl = environment.apiUrl;
   private readonly slideshowUrl = `${this.apiUrl}/slideshow`;
-  private readonly slideshowContextUrl = `${this.apiUrl}/for-slide-show`;
+  //private readonly slideshowContextUrl = `${this.apiUrl}/for-slide-show`;
 
   constructor(private http: HttpClient) {}
 
@@ -38,6 +38,6 @@ export class SlideshowService {
 
   /** Get interment / document info for slideshow page */
   getContext(documentNo: string): Observable<any> {
-    return this.http.get(`${this.slideshowContextUrl}/${documentNo}`);
+   return this.http.get(`${this.slideshowUrl}/${documentNo}`);
   }
 }
