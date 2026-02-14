@@ -279,6 +279,14 @@ export class UploadReviewComponent implements OnInit {
      if (!this.documentNo) return;
       this.router.navigate(['/intermentsUploadInterredPhotoLink', this.documentNo.trim()]);
     } 
+
+    goToUploadSlideShowPhoto(): void {
+ if (this.documentNo.trim()) {
+    this.router.navigate(['/slideshow', this.documentNo.trim()]);
+  } else {
+    window.alert('❌ Please enter a valid Document Number.');
+  }
+}
   
 
   /** Language helpers */

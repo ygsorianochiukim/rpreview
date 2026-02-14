@@ -105,23 +105,77 @@ export class UploadInterredPhotoComponent implements OnInit {
     this.uploadForm?.disable();
   }
 
+  // ⚡ Toggle Edit for existing photo
   toggleEdit(index: number): void {
     const record = this.records.at(index);
     record.patchValue({ editing: true, photo: null });
   }
 
-  onPhotoChange(event: Event, index: number): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
+  
+async onPhotoChange(event: Event, index: number): Promise<void> {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
 
-    const file = input.files[0];
-    const record = this.records.at(index);
-    record.patchValue({ photo: file });
+  const file = input.files[0];
+  const record = this.records.at(index);
 
-    const reader = new FileReader();
-    reader.onload = () => record.patchValue({ preview: reader.result });
-    reader.readAsDataURL(file);
+  // Reset previous feedback
+  record.patchValue({ photo: null, preview: null });
+  this.error = null;
+  this.message = null;
+  this.loading = true; // ⚡ Start loading
+
+  // Quick frontend checks
+  if (!file.type.startsWith('image/')) {
+    this.error = `Occupant: ${record.value.occupant_name}\nOnly image files are allowed.`;
+    this.loading = false;
+    return;
   }
+
+  if (file.size > 10 * 1024 * 1024) { // 10 MB
+    this.error = `Occupant: ${record.value.occupant_name}\nFile is too large. Max 10 MB.`;
+    this.loading = false;
+    return;
+  }
+
+  // Local preview
+  const reader = new FileReader();
+  reader.onload = () => record.patchValue({ preview: reader.result });
+  reader.readAsDataURL(file);
+
+  try {
+    const form = new FormData();
+    form.append('photo', file);
+
+    // ✅ Use the Angular service instead of fetch
+    const data = await this.intermentPhotoService.validatePhoto(form).toPromise();
+
+    // Use first item from array returned by webhook
+    const item = Array.isArray(data) ? data[0] : data;
+    const isValid = item?.is_valid === true;
+    const output = item?.output || 'Photo validation failed.';
+
+    if (isValid) {
+      record.patchValue({ photo: file });
+      this.message = `Occupant: ${record.value.occupant_name}\n${output}`;
+      this.error = null; // Clear previous error
+    } else {
+      record.patchValue({ photo: null, preview: null });
+      this.error = `Occupant: ${record.value.occupant_name}\n${output}`;
+      this.message = null;
+    }
+
+  } catch (err) {
+    console.error('Validation error:', err);
+    record.patchValue({ photo: null, preview: null });
+    this.error = `Occupant: ${record.value.occupant_name}\nUnable to validate photo. Try again.`;
+    this.message = null;
+  } finally {
+    this.loading = false; // ⚡ Stop loading
+  }
+}
+
+
 
   removePhoto(index: number): void {
     const record = this.records.at(index);
@@ -193,5 +247,4 @@ export class UploadInterredPhotoComponent implements OnInit {
 
   goBackToLanding(): void { this.router.navigate(['/interments', this.documentNo]); }
   goToReview(): void { this.router.navigate(['/intermentsReviewLink', this.documentNo]); }
-
 }

@@ -1,59 +1,214 @@
-<div class="slideshow-container">
+<div
+  class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4 sm:px-6 lg:px-8 py-8"
+  [style.background-image]="'url(background.webp)'"
+>
 
-  <h2>Upload Slideshow Photos</h2>
-
-  <!-- Occupant Info -->
-  <div *ngIf="occupantStatus === 'valid'" class="occupant-info">
-    <p><strong>Occupant:</strong> {{ occupantName }}</p>
-    <p><strong>Interment Date:</strong> {{ intermentDate | date }}</p>
+  <!-- Logo -->
+  <div class="w-full flex justify-center mb-8">
+    <img src="logo.png" alt="Logo" class="h-12 w-auto" />
   </div>
 
-  <div *ngIf="occupantStatus !== 'valid'" class="message invalid">
-    {{ occupantMessage }}
-  </div>
-
-  <!-- Error / Success -->
-  <div *ngIf="error" class="message error">{{ error }}</div>
-  <div *ngIf="message" class="message success">{{ message }}</div>
-
-  <!-- Upload Form -->
-  <form [formGroup]="uploadForm" (ngSubmit)="submitUpload()">
-
-    <label>
-      Your Name:
-      <input type="text" formControlName="uploader_name" placeholder="Uploader Name">
-    </label>
-
-    <label>
-      Select Photos (Multiple):
-      <input type="file" multiple accept="image/*" (change)="onSlideshowFilesChange($event)">
-    </label>
-
-    <!-- Preview Selected -->
-    <div class="preview-grid" *ngIf="slideshowPreviews.length">
-      <div class="preview-item" *ngFor="let preview of slideshowPreviews; let i = index">
-        <img [src]="preview" alt="Preview">
-        <button type="button" (click)="removeSelectedFile(i)">Remove</button>
-      </div>
+  <!-- Invalid Occupant -->
+  <div *ngIf="occupantStatus !== 'valid'" class="w-full max-w-3xl text-center mb-6">
+    <div class="bg-white/80 text-red-600 rounded-xl p-5 shadow-md backdrop-blur font-nunito">
+      {{ occupantMessage }}
     </div>
-
-    <!-- Existing Photos -->
-    <div class="preview-grid" *ngIf="existingPhotos.length">
-      <div class="preview-item" *ngFor="let photo of existingPhotos">
-        <img [src]="photo" alt="Existing Photo">
-        <button type="button" (click)="deleteExistingPhoto(photo)">Delete</button>
-      </div>
-    </div>
-
-    <button type="submit" [disabled]="loading">
-      {{ loading ? 'Uploading...' : 'Upload Slideshow' }}
-    </button>
-  </form>
-
-  <!-- Navigation -->
-  <div class="navigation">
-    <button (click)="goBackToLanding()">Back</button>
-    <button (click)="goToReview()">Go to Review</button>
   </div>
+
+  <!-- Main Content -->
+  <ng-container *ngIf="occupantStatus === 'valid'">
+    <div
+      class="w-full max-w-3xl bg-white/85 backdrop-blur-lg rounded-3xl shadow-2xl p-8 sm:p-10 text-center relative"
+    >
+
+      <!-- Loading Overlay -->
+      <div
+        *ngIf="loading"
+        class="absolute inset-0 bg-white/70 flex flex-col items-center justify-center z-50 rounded-3xl"
+      >
+        <div class="animate-spin border-4 border-blue-500 rounded-full w-12 h-12 mb-4"></div>
+        <p class="text-blue-700 font-semibold">Uploading with care…</p>
+      </div>
+
+      <!-- Header -->
+      <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 font-nunito mb-2">
+        A Space to Remember
+      </h2>
+      <p class="text-gray-600 font-nunito mb-8 leading-relaxed">
+        Share photos to honor and remember your loved one with care and respect.
+      </p>
+
+      <!-- Success / Error -->
+      <div *ngIf="message" class="mb-4 bg-green-50 text-green-700 rounded-lg p-3 font-nunito">
+        {{ message }}
+      </div>
+      <div *ngIf="error" class="mb-4 bg-red-50 text-red-700 rounded-lg p-3 font-nunito">
+        {{ error }}
+      </div>
+
+      <!-- Occupant Info -->
+      <div class="mb-8 text-left font-nunito text-gray-800 space-y-1">
+        <p><span class="font-semibold">Occupant:</span> {{ occupantName }}</p>
+        <p><span class="font-semibold">Interment Date:</span> {{ intermentDate | date }}</p>
+      </div>
+
+      <!-- Upload Form -->
+      <form [formGroup]="uploadForm" (ngSubmit)="submitUpload()" class="space-y-6 text-left">
+
+        <!-- Email -->
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">
+            Your Email Address <span class="text-red-600">*</span>
+          </label>
+          <input
+            type="email"
+            formControlName="email_add"
+            placeholder="Enter your valid email address"
+            class="w-full rounded-xl border px-4 py-3 font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400"
+            [disabled]="uploadForm.disabled"
+          />
+          <div
+            *ngIf="uploadForm.get('email_add')?.touched && uploadForm.get('email_add')?.invalid"
+            class="text-red-600 text-sm mt-1"
+          >
+            <span *ngIf="uploadForm.get('email_add')?.errors?.['required']">
+              Email is required.
+            </span>
+            <span *ngIf="uploadForm.get('email_add')?.errors?.['email']">
+              Enter a valid email address.
+            </span>
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">
+            Your Name <span class="text-red-600">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="uploader_name"
+            placeholder="Enter your full name"
+            class="w-full rounded-xl border px-4 py-3 font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400"
+            [disabled]="uploadForm.disabled"
+          />
+          <div
+            *ngIf="uploadForm.get('uploader_name')?.touched && uploadForm.get('uploader_name')?.invalid"
+            class="text-red-600 text-sm mt-1"
+          >
+            Name is required.
+          </div>
+        </div>
+
+        <!-- Photo Upload (Max 50 / JPG-PNG Only) -->
+        <div>
+          <label class="block mb-2 text-gray-700 font-medium">
+            Select Photos (Max 50 – JPG / PNG only) <span class="text-red-600">*</span>
+          </label>
+
+          <input
+            type="file"
+            multiple
+            accept=".jpg,.jpeg,.png"
+            (change)="onSlideshowFilesChange($event)"
+            class="w-full border border-dashed rounded-xl px-4 py-3 text-gray-500 cursor-pointer"
+            [disabled]="uploadForm.disabled"
+          />
+
+          <p class="text-sm text-gray-500 mt-2">
+            You may upload up to 50 photos. Only JPG and PNG files are allowed.
+          </p>
+        </div>
+
+        <!-- Selected Photo Previews -->
+        <div
+          *ngIf="slideshowPreviews.length"
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+        >
+          <div
+            *ngFor="let preview of slideshowPreviews; let i = index"
+            class="relative group"
+          >
+            <img
+              [src]="preview"
+              alt="Preview"
+              class="w-full h-32 object-cover rounded-lg shadow"
+            />
+            <button
+              type="button"
+              (click)="removeSelectedFile(i)"
+              class="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <!-- Existing Photos -->
+        <div
+          *ngIf="existingPhotos.length"
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 pt-4"
+        >
+          <div
+            *ngFor="let photo of existingPhotos"
+            class="relative group"
+          >
+            <img
+              [src]="photo"
+              alt="Existing Photo"
+              class="w-full h-32 object-cover rounded-lg shadow"
+            />
+            <button
+              type="button"
+              (click)="deleteExistingPhoto(photo)"
+              class="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+          <button
+            type="submit"
+            [disabled]="loading || uploadForm.disabled"
+            class="w-full sm:w-auto bg-secondary hover:bg-brown-dark text-white px-8 py-3 rounded-full font-semibold font-nunito transition"
+          >
+            {{ loading ? 'Uploading with care…' : 'Upload Photos' }}
+          </button>
+
+          <button
+            type="button"
+            (click)="goBackToLanding()"
+            class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-full font-semibold font-nunito transition"
+          >
+            Back to Home
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Additional Actions -->
+      <div class="mt-8 flex justify-center gap-4">
+        <button
+          (click)="goToReview()"
+          [disabled]="loading"
+          class="bg-secondary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold font-nunito transition"
+        >
+          Share a Review
+        </button>
+
+        <button
+          (click)="goToUploadPhoto()"
+          [disabled]="loading"
+          class="bg-secondary text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition font-nunito"
+        >
+          Upload Interred Photo
+        </button>
+      </div>
+
+    </div>
+  </ng-container>
 
 </div>
