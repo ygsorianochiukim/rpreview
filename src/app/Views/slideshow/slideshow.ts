@@ -68,6 +68,7 @@ export class SlideshowComponent implements OnInit {
 
     this.documentNo = doc.trim();
     this.buildForm();
+   
     this.loadContext();
   }
 
@@ -84,33 +85,81 @@ export class SlideshowComponent implements OnInit {
   // LOAD DATA
   // =========================
 
-  private loadContext(): void {
-    this.slideshowService.getContext(this.documentNo).subscribe({
-      next: (records: any[]) => {
-        if (!records?.length) {
-          this.invalidateLink('❌ Invalid document link.', 'invalid');
-          return;
-        }
+private loadContext(): void {
+  this.slideshowService.getContext(this.documentNo).subscribe({
+    next: (records: any[]) => {
 
-        const record = records[0];
-
-        this.occupantName = record.occupant ?? record.name1 ?? '';
-        this.intermentDate = record.date_interment ?? '';
-
-        this.occupantStatus = 'valid';
-        this.uploadForm.enable();
-
-        this.loadExistingSlideshow();
-      },
-      error: (err) => {
-        if (err.status === 403) {
-          this.invalidateLink('⏳ This link has expired.', 'expired');
-        } else {
-          this.invalidateLink('⚠️ Invalid or unavailable link.', 'invalid');
-        }
+      if (!records?.length) {
+        this.invalidateLink('❌ Invalid document link.', 'invalid');
+        return;
       }
-    });
-  }
+
+      const record = records[0];
+
+      this.occupantName = record.occupant ?? record.name1 ?? '';
+      this.intermentDate = record.date_interment ?? '';
+
+      // ✅ EXPIRATION LOGIC MOVED HERE
+      if (!this.intermentDate) {
+        this.invalidateLink('⚠️ Missing interment date.', 'invalid');
+        return;
+      }
+
+      const now = new Date();
+      const expiry = new Date(this.intermentDate);
+
+      if (now > expiry) {
+        this.invalidateLink('⏳ This link has expired.', 'expired');
+        return;
+      }
+
+      // ✅ If not expired
+      this.occupantStatus = 'valid';
+      this.uploadForm.enable();
+
+      this.loadExistingSlideshow();
+    },
+
+    error: (err) => {
+      if (err.status === 403) {
+        this.invalidateLink('⏳ This link has expired.', 'expired');
+      } else {
+        this.invalidateLink('⚠️ Invalid or unavailable link.', 'invalid');
+      }
+    }
+  });
+}
+
+
+
+// private loadContext(): void {
+//     this.slideshowService.getContext(this.documentNo).subscribe({
+//       next: (records: any[]) => {
+//         if (!records?.length) {
+//           this.invalidateLink('❌ Invalid document link.', 'invalid');
+//           return;
+//         }
+
+//         const record = records[0];
+
+//         this.occupantName = record.occupant ?? record.name1 ?? '';
+//         this.intermentDate = record.date_interment ?? '';
+
+//         this.occupantStatus = 'valid';
+//         this.uploadForm.enable();
+
+//         this.loadExistingSlideshow();
+//       },
+//       error: (err) => {
+//         if (err.status === 403) {
+//           this.invalidateLink('⏳ This link has expired.', 'expired');
+//         } else {
+//           this.invalidateLink('⚠️ Invalid or unavailable link.', 'invalid');
+//         }
+//       }
+//     });
+//   }
+     
 
   private loadExistingSlideshow(): void {
     this.slideshowService.getByDocumentNo(this.documentNo).subscribe({

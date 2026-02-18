@@ -58,10 +58,10 @@ export class UploadInterredPhotoComponent implements OnInit {
       next: (res: ReviewContext[]) => {
         if (!res.length) return this.setInvalidLink('❌ Interment record not found.');
 
-        this.intermentDate = res[0].date_interment ?? '';
-        const now = new Date();
-        const expiry = new Date(this.intermentDate);
-        if (now > expiry) return this.setInvalidLink('⏳ Link expired', 'expired');
+      this.intermentDate = res[0].date_interment ?? '';
+      const now = new Date();
+      const expiry = new Date(this.intermentDate);
+       if (now > expiry) return this.setInvalidLink('⏳ Link expired', 'expired');
 
         this.occupantNames = res.map(r => r.occupant ?? r.name1);
         this.buildForm();
@@ -182,7 +182,7 @@ async onPhotoChange(event: Event, index: number): Promise<void> {
     record.patchValue({ photo: null, preview: null, editing: false });
   }
 
-  submitUpload(): void {
+submitUpload(): void {
     this.error = null;
     this.message = null;
 
@@ -244,6 +244,7 @@ async onPhotoChange(event: Event, index: number): Promise<void> {
       }
     });
   }
+   
 
   goBackToLanding(): void { this.router.navigate(['/interments', this.documentNo]); }
   goToReview(): void { this.router.navigate(['/intermentsReviewLink', this.documentNo]); }

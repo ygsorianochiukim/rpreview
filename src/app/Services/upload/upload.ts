@@ -36,6 +36,14 @@ export class IntermentPhotoService {
     // make sure the backend route exists: POST /api/upload-photos/validate-photo
     return this.http.post(`${this.uploadUrl}/validate-photo`, formData);
   }
+
+  /** Store new + update existing Lapida photos in one request */
+//storeOrUpdate(formData: FormData): Observable<any> {
+  // Make sure this matches your Laravel endpoint
+ // return this.http.post(`${this.uploadUrl}/store-or-update`, formData);
+//}
+
+
 }
 
 /** Context model for upload (currently empty, can be extended) */
