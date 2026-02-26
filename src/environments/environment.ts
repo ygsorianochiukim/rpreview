@@ -15,8 +15,8 @@ export const environment = {
         //core-system
 
             //live
-      apiUrl: 'http://api.rp-vespera.cloud/api',
+      //apiUrl: 'http://api.rp-vespera.cloud/api',
 
        //staging
-   //apiUrl: 'http://staging.rp-vespera.cloud/api',
+  apiUrl: 'http://staging.rp-vespera.cloud/api',
 };
