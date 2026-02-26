@@ -35,8 +35,7 @@
         A Space to Remember
       </h2>
       <p class="text-gray-600 font-nunito mb-8 leading-relaxed">
-        Share photos to honor and remember your loved one with care and respect.
-      </p>
+        Share photos to honor and remember your loved one with care and respect. Submitted photos will be used during the interment for the slideshow presentation on the TV. Thank you!     </p>
 
       <!-- Success / Error -->
       <div *ngIf="message" class="mb-4 bg-green-50 text-green-700 rounded-lg p-3 font-nunito">
@@ -57,14 +56,18 @@
 
         <!-- Email -->
         <div>
+           <label class="block mb-2 text-gray-700 text-sm">
+           This email will be used to access and manage the interment photos in Google Drive.
+            </label>
           <label class="block mb-2 text-gray-700 font-medium">
-            Your Email Address <span class="text-red-600">*</span>
+            Your Email Address <span class="text-red-600">*</span><br>
+           
           </label>
           <input
             type="email"
             formControlName="email_add"
             placeholder="Enter your valid email address"
-            class="w-full rounded-xl border px-4 py-3 font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400"
+            class="w-full text-gray-700 rounded-xl border px-4 py-3 font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400"
             [disabled]="uploadForm.disabled"
           />
           <div
@@ -89,7 +92,7 @@
             type="text"
             formControlName="uploader_name"
             placeholder="Enter your full name"
-            class="w-full rounded-xl border px-4 py-3 font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400"
+            class="w-full rounded-xl text-gray-700 border px-4 py-3 font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400"
             [disabled]="uploadForm.disabled"
           />
           <div
@@ -191,21 +194,21 @@
 
       <!-- Additional Actions -->
       <div class="mt-8 flex justify-center gap-4">
-        <button
+        <!-- <button
           (click)="goToReview()"
           [disabled]="loading"
           class="bg-secondary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold font-nunito transition"
         >
           Share a Review
-        </button>
+        </button> -->
 
-        <button
+        <!-- <button
           (click)="goToUploadPhoto()"
           [disabled]="loading"
           class="bg-secondary text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition font-nunito"
         >
           Upload Interred Photo
-        </button>
+        </button> -->
       </div>
 
     </div>

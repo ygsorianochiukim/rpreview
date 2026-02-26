@@ -44,7 +44,18 @@ export class IntermentsLandingComponent implements OnInit {
         this.loading = false;
         this.occupantStatus = 'valid';
         this.occupantNames = res.map((r: any) => r.occupant ?? r.name1);
-        this.intermentDate = res[0].date_interment;
+        // this.intermentDate = res[0].date_interment;
+        const rawDate = res[0].date_interment ?? '';
+          if (rawDate) {
+            const dateObj = new Date(rawDate);
+            this.intermentDate = dateObj.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+          } else {
+            this.intermentDate = '';
+          }
       },
       error: (err: any) => { // <-- Type the error
         this.loading = false;
@@ -72,11 +83,21 @@ export class IntermentsLandingComponent implements OnInit {
 
   goToUploadPhoto() {
     if (this.documentNo.trim()) {
-      this.router.navigate(['/intermentsUploadInterredPhotoLink', this.documentNo.trim()]);
+      this.router.navigate(['/intermentsUploadInterredPhotoLink_ForPost', this.documentNo.trim()]);
     } else {
       alert('Please enter a valid Document No.');
     }
   }
+
+  //   goToUploadPhoto() {
+  //   if (this.documentNo.trim()) {
+  //     this.router.navigate(['/intermentsUploadInterredPhotoLink_ForPost', this.documentNo.trim()]);
+  //   } else {
+  //     alert('Please enter a valid Document No.');
+  //   }
+  // }
+
+  //
 
 goToUploadSlideShowPhoto(): void {
  if (this.documentNo.trim()) {

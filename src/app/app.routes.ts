@@ -13,8 +13,12 @@ export const routes: Routes = [
   { path: 'intermentsReviewLink/:document_no', component: UploadReviewComponent },
 
   // Upload interred photo route
-  { path: 'intermentsUploadInterredPhotoLink/:document_no', component: UploadInterredPhotoComponent },
+  // { path: 'intermentsUploadInterredPhotoLink/:document_no', component: UploadInterredPhotoComponent },
 
+  { path: 'intermentsUploadInterredPhotoLink_ForPost/:document_no', component: UploadInterredPhotoComponent },
+
+  //intermentsUploadInterredPhotoLink_ForPost
+  
   // Slideshow upload route
   { path: 'slideshow/:document_no', component: SlideshowComponent },
 
