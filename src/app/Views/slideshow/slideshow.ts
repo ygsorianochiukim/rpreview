@@ -131,36 +131,6 @@ private loadContext(): void {
 }
 
 
-
-// private loadContext(): void {
-//     this.slideshowService.getContext(this.documentNo).subscribe({
-//       next: (records: any[]) => {
-//         if (!records?.length) {
-//           this.invalidateLink('❌ Invalid document link.', 'invalid');
-//           return;
-//         }
-
-//         const record = records[0];
-
-//         this.occupantName = record.occupant ?? record.name1 ?? '';
-//         this.intermentDate = record.date_interment ?? '';
-
-//         this.occupantStatus = 'valid';
-//         this.uploadForm.enable();
-
-//         this.loadExistingSlideshow();
-//       },
-//       error: (err) => {
-//         if (err.status === 403) {
-//           this.invalidateLink('⏳ This link has expired.', 'expired');
-//         } else {
-//           this.invalidateLink('⚠️ Invalid or unavailable link.', 'invalid');
-//         }
-//       }
-//     });
-//   }
-     
-
   private loadExistingSlideshow(): void {
     this.slideshowService.getByDocumentNo(this.documentNo).subscribe({
       next: (res: any) => {

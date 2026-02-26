@@ -4,7 +4,8 @@ export const environment = {
 
       //local
 
- //apiUrl: 'http://localhost:8000/api',
+ //
+//apiUrl: 'http://localhost:8000/api',
 
     //staging
     //apiUrl: 'https://wheat-capybara-997939.hostingersite.com/api',
@@ -14,8 +15,8 @@ export const environment = {
         //core-system
 
             //live
-        //apiUrl: 'http://api.rp-vespera.cloud/',
+      apiUrl: 'http://api.rp-vespera.cloud/api',
 
        //staging
-       apiUrl: 'http://staging.rp-vespera.cloud/',
+   //apiUrl: 'http://staging.rp-vespera.cloud/api',
 };

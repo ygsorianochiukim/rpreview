@@ -37,6 +37,11 @@ export class IntermentPhotoService {
     return this.http.post(`${this.uploadUrl}/validate-photo`, formData);
   }
 
+  getIntermentContextForPost(documentNo: string): Observable<any> {
+  return this.http.get(
+    `${this.apiUrl}/intermentsUploadInterredPhotoLink_ForPost/${documentNo}`
+  );
+}
   /** Store new + update existing Lapida photos in one request */
 //storeOrUpdate(formData: FormData): Observable<any> {
   // Make sure this matches your Laravel endpoint
