@@ -1,6 +1,6 @@
 export const environment = {
     //live
-//apiUrl: 'https://springgreen-jellyfish-261481.hostingersite.com/api',
+apiUrl: 'https://springgreen-jellyfish-261481.hostingersite.com/api',
 
       //local
 
@@ -18,5 +18,5 @@ export const environment = {
       //apiUrl: 'https://api.rp-vespera.cloud/api',
 
        //staging
-  apiUrl: 'https://staging.rp-vespera.cloud/api',
+  //apiUrl: 'https://staging.rp-vespera.cloud/api',
 };
