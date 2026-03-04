@@ -1,0 +1,109 @@
+<div
+  class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4 sm:px-6 lg:px-8 py-8"
+  [style.background-image]="'url(background.webp)'"
+>
+
+  <div class="w-full max-w-5xl bg-white/85 backdrop-blur-lg rounded-3xl shadow-2xl p-8 font-nunito relative">
+
+    <!-- Loading Overlay -->
+    <div *ngIf="loading"
+         class="absolute inset-0 bg-white/70 flex flex-col items-center justify-center z-50 rounded-3xl">
+
+      <div class="animate-spin border-4 border-blue-500 rounded-full w-12 h-12 mb-4"></div>
+      <p class="text-blue-700 font-semibold">Loading records…</p>
+
+    </div>
+
+    <!-- Header -->
+    <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 text-center mb-6">
+        Email List Portal
+    </h2>
+
+    <!-- Search -->
+    <div class="mb-6">
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        (input)="filterData()"
+        placeholder="Search document, email or occupant..."
+        class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
+      />
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !filteredReviews.length"
+         class="text-center text-gray-500 py-10">
+
+      No records found.
+
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto rounded-xl border border-gray-200"
+         *ngIf="!loading && filteredReviews.length">
+
+      <table class="w-full text-sm text-left">
+
+        <thead class="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
+          <tr>
+            <th class="px-6 py-4">Document No</th>
+            <th class="px-6 py-4">Occupant</th>
+            <th class="px-6 py-4">Email Address</th>
+            
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200 bg-white">
+
+          <tr *ngFor="let item of paginatedReviews"
+              class="hover:bg-gray-50 transition">
+
+            <td class="px-6 py-4 font-semibold text-gray-800">
+              {{ item.document_no }}
+            </td>
+
+            <td class="px-6 py-4 text-gray-600">
+              {{ item.occupant }}
+            </td>
+
+            <td class="px-6 py-4 text-gray-600">
+              {{ item.email_add }}
+            </td>
+
+
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-6 mt-6"
+         *ngIf="filteredReviews.length">
+
+      <button
+        (click)="prevPage()"
+        class="px-5 py-2 bg-gray-200 rounded-xl hover:bg-gray-300 transition"
+      >
+        Previous
+      </button>
+
+      <span class="text-gray-600">
+        Page {{ currentPage }}
+      </span>
+
+      <button
+        (click)="nextPage()"
+        class="px-5 py-2 bg-gray-200 rounded-xl hover:bg-gray-300 transition"
+      >
+        Next
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

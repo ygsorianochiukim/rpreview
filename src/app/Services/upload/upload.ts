@@ -11,6 +11,8 @@ export class IntermentPhotoService {
   /** Base API URL (must include /api) */
   private readonly apiUrl = environment.apiUrl;
 
+   private lapidaImageUploadUrl = `${environment.apiUrl}/lapidaDashboard`;
+
   /** Upload photos endpoint */
   private readonly uploadUrl = `${this.apiUrl}/upload-photos`;
 
@@ -42,6 +44,10 @@ export class IntermentPhotoService {
     `${this.apiUrl}/intermentsUploadInterredPhotoLink_ForPost/${documentNo}`
   );
 }
+    // get all records
+    getAll(): Observable<UploadInterredPhotoContext[]> {
+    return this.http.get<UploadInterredPhotoContext[]>(this.lapidaImageUploadUrl);
+  }
   /** Store new + update existing Lapida photos in one request */
 //storeOrUpdate(formData: FormData): Observable<any> {
   // Make sure this matches your Laravel endpoint

@@ -1,0 +1,183 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex justify-center p-6 font-nunito">
+
+  <div class="w-full max-w-7xl bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative">
+
+    <!-- Loading Overlay -->
+    <div *ngIf="loading"
+         class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-50 rounded-3xl">
+
+      <div class="h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+
+      <p class="text-blue-600 font-semibold tracking-wide">
+        Loading interred photo records…
+      </p>
+    </div>
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+
+      <h2 class="text-3xl font-bold text-gray-800 tracking-tight">
+        Interred Photos Registry
+      </h2>
+
+      <input
+        [(ngModel)]="searchText"
+        (input)="search()"
+        placeholder="Search document number or occupant..."
+        class="border text-gray-800 rounded-xl px-5 py-3 w-full md:w-96 focus:ring-2 focus:ring-blue-400 outline-none transition"
+      />
+
+    </div>
+
+    <!-- Table Section -->
+    <div class="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+
+      <div class="overflow-x-auto">
+
+        <table class="w-full text-sm text-center">
+
+          <thead class="bg-secondary text-white sticky top-0 z-10">
+            <tr>
+              <th class="px-6 py-4">Document No</th>
+              <th class="px-6 py-4">Occupant</th>
+              <!-- <th class="px-6 py-4">Gender</th> -->
+              <th class="px-6 py-4">Uploader</th>
+              <th class="px-6 py-4">Photo</th>
+              <!-- <th class="px-6 py-4">Status</th> -->
+              <th class="px-6 py-4 text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-100 bg-white">
+
+            <tr *ngFor="let item of paginatedPhotos"
+                class="hover:bg-blue-50 transition duration-200 group">
+
+              <td class="px-6 py-4 font-semibold text-gray-800">
+                {{ item.document_no }}
+              </td>
+
+              <td class="px-6 py-4 text-gray-600">
+                {{ item.occupant }}
+              </td>
+
+              <!-- <td class="px-6 py-4 text-gray-600">
+                {{ item.gender }}
+              </td> -->
+
+              <td class="px-6 py-4 text-gray-600">
+                {{ item.uploader_name }}
+              </td>
+
+              <td class="px-6 py-4">
+                <img
+                  *ngIf="item.photo"
+                  [src]="item.photo"
+                  class="w-16 h-10 object-cover rounded-lg shadow hover:scale-110 transition duration-300 cursor-pointer"
+                />
+              </td>
+
+              <!-- <td class="px-6 py-4">
+                <span class="px-4 py-1.5 rounded-full text-xs font-semibold"
+                      [ngClass]="getStatusClass(item.is_valid)">
+                  {{ getStatusLabel(item.is_valid) }}
+                </span>
+              </td> -->
+
+              <td class="px-6 py-4 text-center">
+                <button
+                  (click)="openPhoto(item)"
+                  class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-blue-700 transition shadow-sm text-sm">
+
+                  View
+
+                </button>
+              </td>
+
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-6 mt-8"
+         *ngIf="filteredPhotos.length">
+
+      <button
+        (click)="changePage(currentPage - 1)"
+        class="px-6 py-2 bg-gray-200 rounded-xl hover:bg-gray-300 transition font-medium">
+
+        Previous
+      </button>
+
+      <span class="text-gray-600 font-medium">
+        Page {{ currentPage }} of {{ totalPages() }}
+      </span>
+
+      <button
+        (click)="changePage(currentPage + 1)"
+        class="px-6 py-2 bg-gray-200 rounded-xl hover:bg-gray-300 transition font-medium">
+
+        Next
+      </button>
+
+    </div><br>
+      <button (click)="goToReviews()"
+              class="bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded-lg hover:bg-gray-400 transition font-nunito">
+        Go to Reviews
+      </button>
+
+  </div>
+</div>
+
+<!-- Modal Inspector -->
+<div *ngIf="selectedPhoto"
+     class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-6 z-50">
+
+  <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl p-8 animate-fadeIn">
+
+    <div class="flex justify-between items-center border-b pb-4 mb-6">
+
+      <h3 class="text-2xl font-bold text-gray-800">
+        Photo Inspector
+      </h3>
+
+      <button
+        class="text-3xl text-gray-400 hover:text-red-500 transition"
+        (click)="closeModal()">
+
+        ×
+      </button>
+    </div>
+
+    <div class="space-y-5 text-gray-700">
+
+      <img
+        *ngIf="selectedPhoto?.photo"
+        [src]="selectedPhoto?.photo"
+        class="w-full h-80 object-contain rounded-xl shadow-md"
+      />
+
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+
+        <p><strong>Document:</strong> {{ selectedPhoto?.document_no }}</p>
+        <p><strong>Occupant:</strong> {{ selectedPhoto?.occupant }}</p>
+        <p><strong>Uploader:</strong> {{ selectedPhoto?.uploader_name }}</p>
+
+      </div>
+
+    </div>
+
+    <div class="mt-8 flex justify-end">
+      <button
+        class="px-6 py-3 bg-gray-300 hover:bg-gray-400 rounded-xl transition font-semibold"
+        (click)="closeModal()">
+
+        Close Window
+      </button>
+    </div>
+
+  </div>
+</div>
