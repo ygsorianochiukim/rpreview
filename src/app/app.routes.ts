@@ -1,8 +1,12 @@
 import { Routes } from '@angular/router';
 import { UploadReviewComponent } from './Views/upload-review/upload-review';
+import { ViewReviewComponent } from './Views/upload-review/viewReviews';
+import { ViewUploadInterredPhotoComponent } from './Views/upload-interred-photo/viewUploads';
 import { UploadInterredPhotoComponent } from './Views/upload-interred-photo/upload-interred-photo';
 import { IntermentsLandingComponent } from './Views/interments-landing/landing';
 import { SlideshowComponent } from './Views/slideshow/slideshow';
+import { IsUploadedReviewEmail } from './Views/isUploadedReviewEmail/is-uploaded-review-email';
+import { Templogin } from './Views/templogin/templogin';
 
 export const routes: Routes = [
   // Landing page with optional document number in URL
@@ -16,6 +20,14 @@ export const routes: Routes = [
   // { path: 'intermentsUploadInterredPhotoLink/:document_no', component: UploadInterredPhotoComponent },
 
   { path: 'intermentsUploadInterredPhotoLink_ForPost/:document_no', component: UploadInterredPhotoComponent },
+
+  { path: 'isReviewedEmail', component: IsUploadedReviewEmail },
+
+  { path: 'allReviews', component: ViewReviewComponent },
+
+  { path: 'lapidaDashboard', component: ViewUploadInterredPhotoComponent },
+
+   { path: 'login', component: Templogin },
 
   //intermentsUploadInterredPhotoLink_ForPost
   

@@ -70,7 +70,7 @@ export class UploadInterredPhotoComponent implements OnInit {
         next: (res: ReviewContext[]) => {
           if (!res.length) return this.setInvalidLink('❌ Interment record not found.');
 
-          // this.intermentDate = res[0].date_interment ?? '';
+          this.intermentDate = res[0].date_interment ?? '';
 
           const rawDate = res[0].date_interment ?? '';
             if (rawDate) {
@@ -84,9 +84,9 @@ export class UploadInterredPhotoComponent implements OnInit {
               this.intermentDate = '';
             }
 
-          // const now = new Date();
-          // const expiry = new Date(this.intermentDate);
-          // if (now > expiry) return this.setInvalidLink('⏳ Link expired', 'expired');
+          const now = new Date();
+          const expiry = new Date(this.intermentDate);
+          if (now > expiry) return this.setInvalidLink('⏳ Link expired', 'expired');
 
           this.occupantNames = res.map(r => r.occupant ?? r.name1);
           this.buildForm();
@@ -251,6 +251,7 @@ export class UploadInterredPhotoComponent implements OnInit {
         const fd = new FormData();
         fd.append('photo', val.photo);
         fd.append('uploader_name', val.uploader_name);
+        fd.append('gender', val.gender);
         updateCalls.push(this.intermentPhotoService.updatePhoto(val.recordId, fd));
       }
 

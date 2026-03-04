@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ReviewContext } from '../../Models/review/review-context.model';
+import { Review } from '../../Models/review/viewReview';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -9,7 +10,10 @@ import { environment } from '../../../environments/environment';
 })
 export class ReviewService {
   private reviewUrl = `${environment.apiUrl}/review`;
-  private intermentsUrl = `${environment.apiUrl}/intermentsReviewLink`; // updated to match new backend route
+  private intermentsUrl = `${environment.apiUrl}/intermentsReviewLink`; 
+  private allReviewsUrl = `${environment.apiUrl}/allReviews`;
+  
+ 
 
   constructor(private http: HttpClient) {}
 
@@ -20,5 +24,9 @@ export class ReviewService {
 
   submitReview(formData: FormData): Observable<any> {
     return this.http.post(this.reviewUrl, formData);
+  }
+
+    getAllReviews(): Observable<Review[]> {
+    return this.http.get<Review[]>(this.allReviewsUrl);
   }
 }

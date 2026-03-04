@@ -1,0 +1,232 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex justify-center p-6 font-nunito">
+
+  <div class="w-full max-w-7xl bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative">
+
+    <!-- Loading Overlay -->
+    <div *ngIf="loading"
+         class="absolute inset-0 bg-white/70 backdrop-blur flex flex-col items-center justify-center z-50 rounded-3xl">
+
+      <div class="animate-pulse flex flex-col items-center gap-4">
+        <div class="h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-blue-600 font-semibold tracking-wide">Retrieving Review Records...</p>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+
+      <h2 class="text-3xl font-bold text-gray-800">
+        Review Management Console
+      </h2>
+
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        (input)="search()"
+        placeholder="Search reviewer, document number..."
+        class="w-full md:w-96 border border-gray-300 rounded-xl px-5 py-3 focus:ring-2 focus:ring-blue-400 outline-none transition"
+      />
+
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !filteredReviews.length"
+         class="flex flex-col items-center justify-center py-20 text-gray-400">
+
+      <div class="text-6xl mb-4">📄</div>
+      <p class="text-lg font-medium">No review records found</p>
+
+    </div>
+
+    <!-- Table Container -->
+    <div *ngIf="!loading && filteredReviews.length"
+         class=" rounded-2xl overflow-hidden shadow-sm">
+
+      <div class="overflow-x-auto">
+
+        <table class="w-full text-sm text-center">
+
+          <thead class="bg-secondary text-white sticky top-0 z-10">
+            <tr>
+              <th class="px-6 py-4">Document No</th>
+              <th class="px-6 py-4">Reviewer</th>
+              <th class="px-6 py-4">Contact</th>
+              <th class="px-6 py-4">Feedback Preview</th>
+              <th class="px-6 py-4">Submitted</th>
+              <!-- <th class="px-6 py-4">Status</th> -->
+              <th class="px-6 py-4 text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-100 bg-white">
+
+            <tr *ngFor="let review of paginatedReviews"
+                class="hover:bg-blue-50 transition duration-200 group">
+
+              <td class="px-6 py-4 font-semibold text-gray-800">
+                {{ review.document_no }}
+              </td>
+
+              <td class="px-6 py-4 text-gray-600">
+                {{ review.reviewer_name }}
+              </td>
+
+              <td class="px-6 py-4 text-gray-600 tracking-wide">
+                {{ review.contact_number }}
+              </td>
+
+              <td class="px-6 py-4 text-gray-500">
+                {{ review.private_feedback | slice:0:50 }}...
+              </td>
+
+              <td class="px-6 py-4 text-gray-500 text-sm">
+                {{ review.submitted_at | date:'MMM dd, yyyy • hh:mm a' }}
+              </td>
+
+              <!-- <td class="px-6 py-4">
+                <span class="px-4 py-1.5 rounded-full text-xs font-semibold"
+                      [ngClass]="getStatusClass(review.is_valid)">
+                  {{ getStatusLabel(review.is_valid) }}
+                </span>
+              </td> -->
+
+              <td class="px-6 py-4 text-center">
+                <button
+                  class="px-4 py-2 bg-secondary hover:bg-blue-700 text-white rounded-xl shadow-md transition duration-200 text-sm"
+                  (click)="openReview(review)">
+                  View
+                </button>
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-6 mt-8"
+         *ngIf="filteredReviews.length">
+
+      <button
+        (click)="changePage(currentPage - 1)"
+        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 rounded-xl transition font-medium">
+
+        Previous
+      </button>
+
+      <span class="text-gray-600 font-medium">
+        Page {{ currentPage }} of {{ totalPages() }}
+      </span>
+
+      <button
+        (click)="changePage(currentPage + 1)"
+        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 rounded-xl transition font-medium">
+
+        Next
+      </button>
+
+    </div><br>
+      <button (click)="goToUploadPhoto()"
+              class=" justify-center bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded-lg hover:bg-gray-400 transition font-nunito">
+        Go to Lapida Photos
+      </button>
+
+  </div>
+</div>
+
+<!-- Premium Modal Inspector -->
+<div *ngIf="selectedReview"
+     class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-6">
+
+  <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl p-8 animate-fadeIn">
+
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+
+      <h3 class="text-2xl font-bold text-gray-800">
+        Review Inspector
+      </h3>
+
+      <button
+        class="text-3xl text-gray-400 hover:text-red-500 transition"
+        (click)="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+    <div class="space-y-5 text-gray-700 leading-relaxed">
+
+      <div class="grid md:grid-cols-2 gap-5">
+
+        <div>
+          <p class="text-xs uppercase text-gray-400">Document Number</p>
+          <p class="font-semibold">{{ selectedReview?.document_no }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs uppercase text-gray-400">Reviewer</p>
+          <p class="font-semibold">{{ selectedReview?.reviewer_name }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs uppercase text-gray-400">Contact</p>
+          <p>{{ selectedReview?.contact_number }}</p>
+        </div>
+
+      </div>
+
+      <hr>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">
+          Public Question
+        </p>
+        <p class="bg-gray-50 p-4 rounded-xl">
+          {{ selectedReview?.selected_public_question }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">
+          Private Question
+        </p>
+        <p class="bg-gray-50 p-4 rounded-xl">
+          {{ selectedReview?.selected_private_question }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">
+          Private Feedback
+        </p>
+        <p class="bg-gray-50 p-4 rounded-xl">
+          {{ selectedReview?.private_feedback }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">
+          Others
+        </p>
+        <p class="bg-gray-50 p-4 rounded-xl">
+          {{ selectedReview?.others }}
+        </p>
+      </div>
+
+    </div>
+
+    <div class="mt-8 flex justify-end">
+      <button
+        class="px-6 py-3 bg-gray-300 hover:bg-gray-400 rounded-xl transition font-semibold"
+        (click)="closeModal()">
+
+        Close Window
+      </button>
+    </div>
+
+  </div>
+</div>
