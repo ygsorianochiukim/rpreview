@@ -6,7 +6,7 @@ import { UploadInterredPhotoComponent } from './Views/upload-interred-photo/uplo
 import { IntermentsLandingComponent } from './Views/interments-landing/landing';
 import { SlideshowComponent } from './Views/slideshow/slideshow';
 import { IsUploadedReviewEmail } from './Views/isUploadedReviewEmail/is-uploaded-review-email';
-import { Templogin } from './Views/templogin/templogin';
+
 
 export const routes: Routes = [
   // Landing page with optional document number in URL
@@ -27,7 +27,6 @@ export const routes: Routes = [
 
   { path: 'lapidaDashboard', component: ViewUploadInterredPhotoComponent },
 
-   { path: 'login', component: Templogin },
 
   //intermentsUploadInterredPhotoLink_ForPost
   
