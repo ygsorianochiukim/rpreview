@@ -1,3 +1,4 @@
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,15 +7,44 @@ import { ReviewService } from '../../Services/review/review';
 
 import { IntermentPhotoService } from '../../Services/upload/upload';
 import { UploadInterredPhotoContext } from '../../Models/upload-interred-photo-context/upload-interred-photo-context';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-upload-interred-photo',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './viewUploads.html'
 })
 
 export class ViewUploadInterredPhotoComponent implements OnInit {
+
+ zoomImage: string | null = null;
+
+
+async downloadImage(url: string | null | undefined) {
+  if (!url) return;
+
+  try {
+    const blob = await firstValueFrom(
+      this.http.get(url, { responseType: 'blob' })
+    );
+
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = url.split('/').pop() || 'photo.jpg';
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    window.URL.revokeObjectURL(blobUrl);
+
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
+}
 
   photos: UploadInterredPhotoContext[] = [];
   filteredPhotos: UploadInterredPhotoContext[] = [];
@@ -30,7 +60,7 @@ export class ViewUploadInterredPhotoComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 5;
 
-  constructor(private service: IntermentPhotoService, private router: Router,) {}
+  constructor(private service: IntermentPhotoService, private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadPhotos();

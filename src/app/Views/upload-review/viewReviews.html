@@ -52,6 +52,8 @@
               <th class="px-6 py-4">Reviewer</th>
               <th class="px-6 py-4">Contact</th>
               <th class="px-6 py-4">Feedback Preview</th>
+              <th class="px-6 py-4">FB Screenshot Preview</th>
+              <th class="px-6 py-4">Google Screenshot Preview</th>
               <th class="px-6 py-4">Submitted</th>
               <!-- <th class="px-6 py-4">Status</th> -->
               <th class="px-6 py-4 text-center">Action</th>
@@ -77,6 +79,24 @@
 
               <td class="px-6 py-4 text-gray-500">
                 {{ review.private_feedback | slice:0:50 }}...
+              </td>
+
+              <td class="px-6 py-4 text-gray-600 tracking-wide">
+              <!-- {{ review.fb_screenshot }} -->
+                 <img
+                  *ngIf="review.fb_screenshot"
+                  [src]="review.fb_screenshot"
+                  class="w-16 h-10 object-cover rounded-lg shadow hover:scale-110 transition duration-300 cursor-pointer"
+                />
+              </td>
+
+              <td class="px-6 py-4 text-gray-600 tracking-wide">
+                <!-- {{ review.google_screenshot }} -->
+                <img
+                  *ngIf="review.google_screenshot"
+                  [src]="review.google_screenshot"
+                  class="w-16 h-10 object-cover rounded-lg shadow hover:scale-110 transition duration-300 cursor-pointer"
+                />
               </td>
 
               <td class="px-6 py-4 text-gray-500 text-sm">
@@ -139,7 +159,190 @@
 </div>
 
 <!-- Premium Modal Inspector -->
-<div *ngIf="selectedReview"
+
+<!-- MAIN MODAL -->
+<div *ngIf="selectedReview as review"
+     class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4 sm:p-6">
+
+  <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 relative">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+      <h3 class="text-xl sm:text-2xl font-bold text-gray-800">
+        Review Inspector
+      </h3>
+
+      <button
+        class="text-2xl sm:text-3xl text-gray-400 hover:text-red-500 transition"
+        (click)="closeModal()">
+        ×
+      </button>
+    </div>
+
+    <!-- SCREENSHOTS -->
+    <div class="mb-8">
+      <h3 class="text-lg sm:text-2xl font-bold text-gray-800 mb-4">
+        Uploaded Screenshots
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- FB -->
+        <div>
+          <p class="text-sm font-semibold text-gray-600 mb-2">FB Review</p>
+
+          <div class="relative group bg-gray-100 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+
+            <ng-container *ngIf="review.fb_screenshot; else noFbImage">
+              <img
+                [src]="review.fb_screenshot"
+                (click)="openZoom(review.fb_screenshot)"
+                class="w-full max-h-72 object-contain rounded-lg shadow cursor-zoom-in hover:scale-105 transition"
+              />
+
+              <button
+                (click)="downloadImage(review.fb_screenshot)"
+                class="absolute bottom-3 right-3 bg-black/70 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition">
+                Download
+              </button>
+            </ng-container>
+
+            <ng-template #noFbImage>
+              <p class="text-gray-400 text-sm">No FB Screenshot Available</p>
+            </ng-template>
+
+          </div>
+        </div>
+
+        <!-- GOOGLE -->
+        <div>
+          <p class="text-sm font-semibold text-gray-600 mb-2">Google Review</p>
+
+          <div class="relative group bg-gray-100 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+
+            <ng-container *ngIf="review.google_screenshot; else noGoogleImage">
+              <img
+                [src]="review.google_screenshot"
+                (click)="openZoom(review.google_screenshot)"
+                class="w-full max-h-72 object-contain rounded-lg shadow cursor-zoom-in hover:scale-105 transition"
+              />
+
+              <button
+                (click)="downloadImage(review.google_screenshot)"
+                class="absolute bottom-3 right-3 bg-black/70 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition">
+                Download
+              </button>
+            </ng-container>
+
+            <ng-template #noGoogleImage>
+              <p class="text-gray-400 text-sm">No Google Screenshot Available</p>
+            </ng-template>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="space-y-6 text-gray-700 leading-relaxed">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <p class="text-xs uppercase text-gray-400">Document Number</p>
+          <p class="font-semibold break-words">{{ review.document_no }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs uppercase text-gray-400">Reviewer</p>
+          <p class="font-semibold break-words">{{ review.reviewer_name }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs uppercase text-gray-400">Contact</p>
+          <p class="break-words">{{ review.contact_number }}</p>
+        </div>
+      </div>
+
+      <hr>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase mb-2">Public Question</p>
+        <p class="bg-gray-50 p-4 rounded-xl break-words">
+          {{ review.selected_public_question }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase mb-2">Private Question</p>
+        <p class="bg-gray-50 p-4 rounded-xl break-words">
+          {{ review.selected_private_question }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase mb-2">Private Feedback</p>
+        <p class="bg-gray-50 p-4 rounded-xl break-words">
+          {{ review.private_feedback }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-400 uppercase mb-2">Others</p>
+        <p class="bg-gray-50 p-4 rounded-xl break-words">
+          {{ review.others }}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="mt-8 flex justify-end">
+      <button
+        class="px-5 py-2 sm:px-6 sm:py-3 bg-gray-300 hover:bg-gray-400 rounded-xl transition font-semibold w-full sm:w-auto"
+        (click)="closeModal()">
+        Close Window
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ZOOM OVERLAY -->
+<div *ngIf="zoomImage"
+     class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-6">
+
+  <div class="relative max-w-5xl w-full">
+
+    <button
+      class="absolute -top-12 right-0 text-white text-3xl hover:text-red-400"
+      (click)="zoomImage = null">
+      ✕
+    </button>
+
+    <button
+      (click)="downloadImage(zoomImage)"
+      class="absolute -top-12 right-14 text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+      Download
+    </button>
+
+    <img
+      [src]="zoomImage"
+      class="w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
+    />
+
+  </div>
+
+
+ 
+
+
+
+
+
+
+<!-- <div *ngIf="selectedReview"
      class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-6">
 
   <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl p-8 animate-fadeIn">
@@ -157,6 +360,32 @@
       </button>
 
     </div>
+
+    <h3 class="text-2xl font-bold text-gray-800">
+        Uploaded Screenshots
+    </h3>
+
+     <h3 class="text-2xl font-bold text-gray-800">
+        FB REVIEW
+
+        <img
+                  *ngIf="selectedReview.fb_screenshot"
+                  [src]="selectedReview.fb_screenshot"
+                  class="w-100 h-100 object-cover rounded-lg shadow hover:scale-110 transition duration-300 cursor-pointer"
+        />
+
+    </h3>
+
+      <h3 class="text-2xl font-bold text-gray-800">
+        GOOGLE REVIEW
+
+        <img
+                  *ngIf="selectedReview.google_screenshot"
+                  [src]="selectedReview.google_screenshot"
+                  class="w-16 h-10 object-cover rounded-lg shadow hover:scale-110 transition duration-300 cursor-pointer"
+        />
+
+    </h3>
 
     <div class="space-y-5 text-gray-700 leading-relaxed">
 
@@ -228,5 +457,5 @@
       </button>
     </div>
 
-  </div>
+  </div> -->
 </div>

@@ -110,7 +110,7 @@
 
           <!-- Facebook Upload -->
           <label class="w-full inline-block bg-secondary text-white py-2 px-4 rounded cursor-pointer text-center font-nunito hover:bg-brown-dark mb-2">
-            Upload Facebook Screenshot
+            Upload Facebook <i><strong>REVIEW</strong></i> Screenshot
             <input type="file" (change)="onFbChange($event)" class="hidden">
           </label>
           <div *ngIf="fbPreview" class="mt-2 mb-4">
@@ -130,7 +130,10 @@
 
           <!-- Google Upload -->
           <label class="w-full inline-block bg-secondary text-white py-2 px-4 rounded cursor-pointer text-center font-nunito hover:bg-brown-dark mb-4">
-            {{ googlePreview ? 'Change Google Screenshot' : 'Upload Google Screenshot' }}
+            <span [innerHTML]="googlePreview
+                ? 'Change Google <i><strong>REVIEW</strong></i> Screenshot'
+                : 'Upload Google <i><strong>REVIEW</strong></i> Screenshot'">
+              </span>
             <input type="file" (change)="onGoogleChange($event)" class="hidden">
           </label>
           <div *ngIf="googlePreview" class="mt-2 mb-4">
