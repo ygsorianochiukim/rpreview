@@ -1,4 +1,4 @@
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,17 +6,63 @@ import { ReviewService } from '../../Services/review/review';
 import { Review } from '../../Models/review/viewReview';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IntermentPhotoService } from '../../Services/upload/upload';
+
+import { firstValueFrom } from 'rxjs';
+
+
 @Component({
   selector: 'app-view-review',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule   // ✅ ADD THIS
+    FormsModule,
+    HttpClientModule   // ✅ ADD THIS
   ],
   templateUrl: './viewReviews.html'
 })
 
+
+
 export class ViewReviewComponent implements OnInit {
+
+  constructor(private reviewService: ReviewService,  private router: Router, private http: HttpClient) {}
+
+
+  zoomImage: string | null = null;
+
+ 
+
+  openZoom(image: string | null | undefined) {
+    if (!image) return;
+    this.zoomImage = image;
+  }
+
+  async downloadImage(url: string | null | undefined) {
+    if (!url) return;
+
+    try {
+      const blob = await firstValueFrom(
+        this.http.get(url, { responseType: 'blob' })
+      );
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+
+      a.href = blobUrl;
+      a.download = url.split('/').pop() || 'screenshot.jpg';
+
+      document.body.appendChild(a);
+      a.click();
+
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  }
+
+ 
 
   loading: boolean = false;    
 
@@ -30,7 +76,7 @@ export class ViewReviewComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 5;
 
-  constructor(private reviewService: ReviewService,  private router: Router,) {}
+  
 
   ngOnInit(): void {
     this.loadReviews();

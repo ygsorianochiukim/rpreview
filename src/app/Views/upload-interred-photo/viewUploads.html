@@ -133,7 +133,7 @@
 </div>
 
 <!-- Modal Inspector -->
-<div *ngIf="selectedPhoto"
+<!-- <div *ngIf="selectedPhoto"
      class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-6 z-50">
 
   <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl p-8 animate-fadeIn">
@@ -175,6 +175,73 @@
         class="px-6 py-3 bg-gray-300 hover:bg-gray-400 rounded-xl transition font-semibold"
         (click)="closeModal()">
 
+        Close Window
+      </button>
+    </div>
+
+  </div>
+</div> -->
+
+<!-- PHOTO MODAL -->
+<div *ngIf="selectedPhoto as photo"
+     class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-6 z-50">
+
+  <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl p-8 animate-fadeIn relative">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center border-b pb-4 mb-6">
+
+      <h3 class="text-2xl font-bold text-gray-800">
+        Photo Inspector
+      </h3>
+
+      <button
+        class="text-3xl text-gray-400 hover:text-red-500 transition"
+        (click)="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+    <!-- IMAGE VIEWER -->
+    <div class="space-y-5 text-gray-700">
+
+      <div class="relative group bg-gray-100 rounded-xl p-4 flex justify-center">
+
+        <!-- Image -->
+        <img
+          *ngIf="photo.photo"
+          [src]="photo.photo"
+          class="w-full h-80 object-contain rounded-xl shadow-md cursor-zoom-in transition hover:scale-105"
+        />
+
+        <!-- Download Button -->
+        <button
+          *ngIf="photo.photo"
+          (click)="downloadImage(photo.photo)"
+          class="absolute bottom-4 right-4 bg-black/70 text-white text-sm px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition">
+
+          Download
+        </button>
+
+      </div>
+
+      <!-- Metadata -->
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+
+        <p><strong>Document:</strong> {{ photo.document_no }}</p>
+        <p><strong>Occupant:</strong> {{ photo.occupant }}</p>
+        <p><strong>Uploader:</strong> {{ photo.uploader_name }}</p>
+
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="mt-8 flex justify-end">
+      <button
+        class="px-6 py-3 bg-gray-300 hover:bg-gray-400 rounded-xl transition font-semibold w-full sm:w-auto"
+        (click)="closeModal()">
         Close Window
       </button>
     </div>
