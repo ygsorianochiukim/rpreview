@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ViewChild, ElementRef , NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -19,6 +20,20 @@ import { ReviewContext } from '../../Models/review/review-context.model';
   imports: [CommonModule, ReactiveFormsModule, FormsModule]
 })
 export class UploadReviewComponent implements OnInit {
+  
+    constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private reviewService: ReviewService,
+    private ngZone: NgZone
+  ) {}
+
+  @ViewChild('fbPreviewSection') fbPreviewSection!: ElementRef;
+
+  showExampleScreenshot = false;
+
+  @ViewChild('exampleSection') exampleSection!: ElementRef;
 
   /** FORM & SUBMISSION */
   reviewForm!: FormGroup;
@@ -73,12 +88,23 @@ export class UploadReviewComponent implements OnInit {
   /** LANGUAGE */
   selectedLanguage: 'en' | 'tl' | 'hil' = 'en';
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private reviewService: ReviewService
-  ) {}
+toggleExampleScreenshot() {
+    this.showExampleScreenshot = !this.showExampleScreenshot;
+
+    if (this.showExampleScreenshot) {
+      // Wait until Angular has rendered the element
+      this.ngZone.runOutsideAngular(() => {
+        setTimeout(() => {
+          if (this.exampleSection) {
+            this.exampleSection.nativeElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'end'
+            });
+          }
+        }, 50); // Slight delay ensures DOM exists
+      });
+    }
+  }
 
   ngOnInit(): void {
     this.buildForm();
@@ -195,15 +221,24 @@ export class UploadReviewComponent implements OnInit {
     }
   }
 
-  /** File uploads */
   onFbChange(event: any): void {
-    this.fbFile = event.target.files[0];
-    if (this.fbFile) {
-      const reader = new FileReader();
-      reader.onload = () => this.fbPreview = reader.result as string;
-      reader.readAsDataURL(this.fbFile);
-    }
+  this.fbFile = event.target.files[0];
+  if (this.fbFile) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.fbPreview = reader.result as string;
+
+      // Scroll to preview section after a short delay
+      setTimeout(() => {
+        this.fbPreviewSection?.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end'
+        });
+      }, 100);
+    };
+    reader.readAsDataURL(this.fbFile);
   }
+}
 
   onGoogleChange(event: any): void {
     this.googleFile = event.target.files[0];
@@ -288,7 +323,6 @@ export class UploadReviewComponent implements OnInit {
   }
 }
   
-
   /** Language helpers */
   getHeaderText(): string {
     return this.selectedLanguage === 'tl'
