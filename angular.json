@@ -95,6 +95,13 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "scripts": [
+              "https://cdn.jsdelivr.net/npm/blueimp-load-image@5.16.0/js/load-image.all.min.js",
+              "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0",
+              "https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection",
+              "https://cdn.jsdelivr.net/npm/@mediapipe/pose",
+              "https://cdn.jsdelivr.net/npm/blueimp-load-image@5.16.0/js/load-image.all.min.js"
             ]
           }
         }
@@ -105,3 +112,5 @@
     "analytics": false
   }
 }
+
+

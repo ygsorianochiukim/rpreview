@@ -6,6 +6,7 @@ import { UploadInterredPhotoComponent } from './Views/upload-interred-photo/uplo
 import { IntermentsLandingComponent } from './Views/interments-landing/landing';
 import { SlideshowComponent } from './Views/slideshow/slideshow';
 import { IsUploadedReviewEmail } from './Views/isUploadedReviewEmail/is-uploaded-review-email';
+import { PhotolinkuploadComponent } from './Views/photolinkupload/photolinkupload';
 
 
 export const routes: Routes = [
@@ -32,6 +33,8 @@ export const routes: Routes = [
   
   // Slideshow upload route
   { path: 'slideshow/:document_no', component: SlideshowComponent },
+
+  { path: 'photolinkupload/:document_no', component: PhotolinkuploadComponent },
 
   // Wildcard: redirect to landing page
   { path: '**', redirectTo: 'interments', pathMatch: 'full' }

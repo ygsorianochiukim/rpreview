@@ -40,4 +40,9 @@ export class SlideshowService {
   getContext(documentNo: string): Observable<any> {
    return this.http.get(`${this.slideshowUrl}/${documentNo}`);
   }
+
+
+  check_orient(formData: FormData) {
+  return this.http.post<any>(this.apiUrl + '/slideshow/check_orient', formData);
+}
 }

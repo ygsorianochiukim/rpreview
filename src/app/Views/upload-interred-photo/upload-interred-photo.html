@@ -43,7 +43,7 @@
 
         <div formArrayName="records">
           <div *ngFor="let record of records.controls; let i = index" [formGroupName]="i"
-               class="border rounded-xl p-4 mb-6 shadow-sm bg-white">
+               class=" rounded-xl p-4 mb-6 shadow-sm bg-white">
 
             <!-- Occupant Name -->
             <div class="mb-2 font-nunito text-gray-800">
@@ -74,19 +74,19 @@
               <!-- Uploader Name -->
               <div class="mb-4">
                 <label class="font-medium block mb-2 text-gray-700 text-sm sm:text-base">
-                  Your Name <span class="text-red-600">*</span>
+                  Your Full Name <span class="text-red-600">*</span>
                 </label>
-                <input type="text" formControlName="uploader_name" placeholder="Enter your name"
+                <input type="text" formControlName="uploader_name" placeholder="Person filling out this form"
                        class="w-full border text-gray-700 rounded-xl px-4 py-3 text-base font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400">
               </div>
 
                 <div class="mb-4">
                   <label class="font-medium block mb-2 text-gray-700 text-sm sm:text-base">
-                    Interred Gender <span class="text-red-600">*</span>
+                    Gender of the Deceased <span class="text-red-600">*</span>
                   </label>
                   <select formControlName="gender"
                           class="w-full border text-gray-700 rounded-xl px-4 py-3 text-base font-nunito focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <option value="" disabled selected>Select gender</option>
+                    <option value="" disabled selected>Select gender of the deceased</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Unknown">Unknown</option>
@@ -118,47 +118,57 @@
               </div>
             </div>
             <!-- 🔥 CROPPER MODAL -->
-            <div *ngIf="showCropper"
-                class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div *ngIf="showCropper"
+              class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
 
-              <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6">
+            <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-lg p-6">
 
-                <h3 class="text-lg font-semibold mb-4 text-center">
-                  Crop Photo (Chest Up)
-                </h3>
-                                <div *ngIf="loading" class="flex justify-center mb-4">
-                  <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                  </svg>
-                  <span class="ml-2 text-blue-700 font-nunito">Validating photo...</span>
-                </div>
+              <h3 class="text-lg font-semibold mb-4 text-center">
+                Crop Photo (Chest Up)
+              </h3>
 
-
-              <!-- <image-cropper
-                *ngIf="showCropper"
+              <!-- Cropper -->
+              <image-cropper
                 [imageFile]="cropperImageFile"
                 [maintainAspectRatio]="true"
-                [aspectRatio]="1/1"
+                [aspectRatio]="3 / 3"
+                [resizeToWidth]="900"
                 format="png"
                 (imageCropped)="imageCropped($event)">
-              </image-cropper> -->
+              </image-cropper>
 
-              <image-cropper
-              *ngIf="showCropper"
-              [imageFile]="cropperImageFile"
-              [maintainAspectRatio]="true"
-              [aspectRatio]="3 / 3"
-              [resizeToWidth]="900"
-              format="png"
-              (imageCropped)="imageCropped($event)">
-            </image-cropper>
+              <!-- Confirm Button -->
+              <div class="flex justify-center mt-4">
+                <button
+                  (click)="confirmCrop()"
+                  [disabled]="!croppedBlob"
+                  class="bg-secondary text-white px-4 py-2 rounded-lg">
+                  Confirm Crop
+                </button>
+              </div>
 
-              <button (click)="confirmCrop()" [disabled]="!croppedBlob">Confirm Crop</button>
-              <!-- <button (click)="cancelCrop()">Cancel</button> -->
+              <!-- 🔄 Loading Overlay -->
+              <div *ngIf="loading"
+                  class="absolute inset-0 bg-white/70 backdrop-blur flex flex-col items-center justify-center rounded-2xl z-50">
+
+                <svg class="animate-spin h-8 w-8 text-blue-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10"
+                          stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+
+                <span class="mt-2 text-blue-700 font-nunito">
+                  Validating photo...
+                </span>
 
               </div>
+
             </div>
+          </div>
 
           </div>
         </div>
