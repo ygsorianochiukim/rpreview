@@ -265,7 +265,7 @@ async onSlideshowFilesChange(event: Event): Promise<void> {
 
         // ✅ Send smaller version to AI webhook
         const formData = new FormData();
-        formData.append('photo[]', resizedForAI);
+        formData.append('photo', resizedForAI);
 
         const response = await firstValueFrom(this.slideshowService.check_orient(formData));
         const responseData = Array.isArray(response) ? response[0] : response;
