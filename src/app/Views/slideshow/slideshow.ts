@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { SlideshowService } from '../../Services/slideshow/slideshow';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { ChangeDetectorRef } from '@angular/core';
 
@@ -84,16 +85,11 @@ processingProgress: number = 0;
     private cd: ChangeDetectorRef
   ) {}
 
-
-
-  // Add this helper method to your component
 isProportional(img: { width: number, height: number }): boolean {
   const ratio = img.width / img.height;
   
-  // Define your allowed aspect ratios
   const allowedRatios = [1.5, 1.33, 1.66]; // 6:4, 4:3, 5:3
   
-  // Check if current ratio is within 0.1 of any allowed ratio
   return allowedRatios.some(allowed => Math.abs(ratio - allowed) < 0.1);
 }
 
@@ -169,7 +165,6 @@ private triggerManualCrop(file: File): Promise<File> {
   });
 }
 
-// Handler for the image-cropper output
 onImageCropped(event: ImageCroppedEvent) {
   this.currentCroppedBlob = event.blob || null;
 }
@@ -186,31 +181,27 @@ async confirmCrop() {
   const img = this.slideshowImages[this.currentIndex];
   const file = this.fileToCrop!;
 
-  // Cropper will give us the rotated/cropped blob
   const croppedFile = new File([this.currentCroppedBlob!], file.name, { type: 'image/jpeg' });
 
-  // Update slideshow
   img.file = croppedFile;
   img.preview = await this.generatePreview(croppedFile);
-  img.rotation = 0;       // rotation already applied in canvas
+  img.rotation = 0;       
   img.needsCrop = false;
   img.needsRotation = false;
 
-  // Close crop modal
   this.showCropModal = false;
   this.currentIndex = -1;
 
-  // Reset transform fully
   this.transform = { rotate: 0, scale: 1, flipH: false, flipV: false };
 }
+
 private generatePreviewFromImage(img: HTMLImageElement): string {
   const canvas = document.createElement('canvas');
-  const MAX_SIZE = 500; // Limits preview to 500px width/height
+  const MAX_SIZE = 500; 
   
   let width = img.width;
   let height = img.height;
 
-  // Scale down while maintaining aspect ratio
   if (width > height) {
     if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
   } else {
@@ -222,11 +213,8 @@ private generatePreviewFromImage(img: HTMLImageElement): string {
   const ctx = canvas.getContext('2d');
   ctx?.drawImage(img, 0, 0, width, height);
 
-  // Return a compressed JPEG data URL
   return canvas.toDataURL('image/jpeg', 0.8);
 }
-
-
 
 async onSlideshowFilesChange(event: Event): Promise<void> {
   const input = event.target as HTMLInputElement;
@@ -487,64 +475,138 @@ async generatePreview(file: File): Promise<string> {
   // =========================
   // SUBMIT UPLOAD
   // =========================
-  async submitUpload(): Promise<void> {
-    this.error = null;
-    this.message = null;
-    this.uploadProgress = 0;
+  // async submitUpload(): Promise<void> {
+  //   this.error = null;
+  //   this.message = null;
+  //   this.uploadProgress = 0;
 
-    if (this.uploadForm.invalid) {
-      this.uploadForm.markAllAsTouched();
-      this.error = 'Please complete all required fields correctly.';
-      return;
-    }
+  //   if (this.uploadForm.invalid) {
+  //     this.uploadForm.markAllAsTouched();
+  //     this.error = 'Please complete all required fields correctly.';
+  //     return;
+  //   }
 
-    this.uploading = true;
-    this.loading = true;
+  //   this.uploading = true;
+  //   this.loading = true;
 
-    try {
-      const goldBorder = await this.loadImageFromPath(this.BORDER_IMAGE_FILE_2);
-      const totalItems = this.slideshowImages.length;
-      const totalBatches = Math.ceil(totalItems / this.BATCH_SIZE);
+  //   try {
+  //     const goldBorder = await this.loadImageFromPath(this.BORDER_IMAGE_FILE_2);
+  //     const totalItems = this.slideshowImages.length;
+  //     const totalBatches = Math.ceil(totalItems / this.BATCH_SIZE);
 
-      let processedCount = 0;
-      let uploadedCount = 0;
+  //     let processedCount = 0;
+  //     let uploadedCount = 0;
 
-      for (let i = 0; i < totalItems; i += this.BATCH_SIZE) {
-        const batchItems = this.slideshowImages.slice(i, i + this.BATCH_SIZE);
+  //     for (let i = 0; i < totalItems; i += this.BATCH_SIZE) {
+  //       const batchItems = this.slideshowImages.slice(i, i + this.BATCH_SIZE);
 
-        const processedFiles = await Promise.all(
-          batchItems.map(async img => {
-            const file = await this.addCustomBorderToImage(img.file, goldBorder);
-            processedCount++;
-            this.uploadProgress = Math.round((processedCount / totalItems) * 50);
-            return file;
-          })
-        );
+  //       const processedFiles = await Promise.all(
+  //         batchItems.map(async img => {
+  //           const file = await this.addCustomBorderToImage(img.file, goldBorder);
+  //           processedCount++;
+  //           this.uploadProgress = Math.round((processedCount / totalItems) * 50);
+  //           return file;
+  //         })
+  //       );
 
-        const formData = new FormData();
-        formData.append('document_no', this.documentNo);
-        formData.append('uploader_name', this.uploadForm.get('uploader_name')?.value!);
-        formData.append('email_add', this.uploadForm.get('email_add')?.value!);
-        processedFiles.forEach(file => formData.append('photo[]', file));
+  //       const formData = new FormData();
+  //       formData.append('document_no', this.documentNo);
+  //       formData.append('uploader_name', this.uploadForm.get('uploader_name')?.value!);
+  //       formData.append('email_add', this.uploadForm.get('email_add')?.value!);
+  //       processedFiles.forEach(file => formData.append('photo[]', file));
 
-        await firstValueFrom(this.slideshowService.uploadSlideshow(formData));
+  //       await firstValueFrom(this.slideshowService.uploadSlideshow(formData));
 
-        uploadedCount++;
-        this.uploadProgress = 50 + Math.round((uploadedCount / totalBatches) * 50);
-      }
+  //       uploadedCount++;
+  //       this.uploadProgress = 50 + Math.round((uploadedCount / totalBatches) * 50);
+  //     }
 
-      this.message = 'Upload successful.';
-      this.slideshowImages = [];
-      this.loadExistingSlideshow();
+  //     this.message = 'Upload successful.';
+  //     this.slideshowImages = [];
+  //     this.loadExistingSlideshow();
 
-    } catch (err) {
-      this.error = 'Upload failed. Please retry.';
-    } finally {
-      this.loading = false;
-      this.uploading = false;
-      this.uploadProgress = 0;
-    }
+  //   } catch (err) {
+  //     this.error = 'Upload failed. Please retry.';
+  //   } finally {
+  //     this.loading = false;
+  //     this.uploading = false;
+  //     this.uploadProgress = 0;
+  //   }
+  // }
+  
+
+async submitUpload(): Promise<void> {
+  this.error = null;
+  this.message = null;
+  this.uploadProgress = 0;
+
+  if (this.uploadForm.invalid) {
+    this.uploadForm.markAllAsTouched();
+    this.error = 'Please complete all required fields correctly.';
+    return;
   }
+
+  this.uploading = true;
+  this.loading = true;
+
+  try {
+    const goldBorder = await this.loadImageFromPath(this.BORDER_IMAGE_FILE_2);
+    const totalItems = this.slideshowImages.length;
+    const totalBatches = Math.ceil(totalItems / this.BATCH_SIZE);
+
+    let processedCount = 0;
+    let uploadedCount = 0;
+
+    for (let i = 0; i < totalItems; i += this.BATCH_SIZE) {
+      const batchItems = this.slideshowImages.slice(i, i + this.BATCH_SIZE);
+
+      const processedFiles = await Promise.all(
+        batchItems.map(async img => {
+          const file = await this.addCustomBorderToImage(img.file, goldBorder);
+          processedCount++;
+          this.uploadProgress = Math.round((processedCount / totalItems) * 50);
+          return file;
+        })
+      );
+
+      const formData = new FormData();
+      formData.append('document_no', this.documentNo);
+      formData.append('uploader_name', this.uploadForm.get('uploader_name')?.value ?? '');
+      formData.append('email_add', this.uploadForm.get('email_add')?.value ?? '');
+
+      processedFiles.forEach(file => {
+        formData.append('photo[]', file, file.name);
+      });
+
+      const response = await firstValueFrom(this.slideshowService.uploadSlideshow(formData));
+      console.log('Upload response:', response);
+
+      uploadedCount++;
+      this.uploadProgress = 50 + Math.round((uploadedCount / totalBatches) * 50);
+    }
+
+    this.message = 'Upload successful.';
+    this.slideshowImages = [];
+    this.loadExistingSlideshow();
+
+  } catch (err) {
+    console.error('Upload error:', err);
+
+    if (err instanceof HttpErrorResponse) {
+      this.error =
+        err.error?.message ||
+        err.error?.error ||
+        JSON.stringify(err.error) ||
+        `Upload failed. Status: ${err.status}`;
+    } else {
+      this.error = 'Upload failed. Please retry.';
+    }
+  } finally {
+    this.loading = false;
+    this.uploading = false;
+    this.uploadProgress = 0;
+  }
+}
 
   // =========================
   // NAVIGATION
