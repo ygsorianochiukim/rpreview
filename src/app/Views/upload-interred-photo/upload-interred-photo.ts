@@ -68,25 +68,25 @@ export class UploadInterredPhotoComponent implements OnInit {
       .getIntermentContextForPost(this.documentNo)
       .subscribe({
         next: (res: ReviewContext[]) => {
-          if (!res.length) return this.setInvalidLink('❌ Interment record not found.');
+          // if (!res.length) return this.setInvalidLink('❌ Interment record not found.');
 
-          this.intermentDate = res[0].date_interment ?? '';
+          // this.intermentDate = res[0].date_interment ?? '';
 
-          const rawDate = res[0].date_interment ?? '';
-            if (rawDate) {
-              const dateObj = new Date(rawDate);
-              this.intermentDate = dateObj.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              });
-            } else {
-              this.intermentDate = '';
-            }
+          // const rawDate = res[0].date_interment ?? '';
+          //   if (rawDate) {
+          //     const dateObj = new Date(rawDate);
+          //     this.intermentDate = dateObj.toLocaleDateString('en-US', {
+          //       year: 'numeric',
+          //       month: 'long',
+          //       day: 'numeric'
+          //     });
+          //   } else {
+          //     this.intermentDate = '';
+          //   }
 
-          const now = new Date();
-          const expiry = new Date(this.intermentDate);
-          if (now > expiry) return this.setInvalidLink('⏳ Link expired', 'expired');
+          // const now = new Date();
+          // const expiry = new Date(this.intermentDate);
+          // if (now > expiry) return this.setInvalidLink('⏳ Link expired', 'expired');
 
           this.occupantNames = res.map(r => r.occupant ?? r.name1);
           this.buildForm();
