@@ -150,9 +150,9 @@ isProportional(img: { width: number, height: number }): boolean {
   }
 
   private invalidateLink(message: string, status: 'invalid' | 'expired'): void {
-    this.occupantStatus = status;
-    this.occupantMessage = message;
-    this.uploadForm.disable();
+    // this.occupantStatus = status;
+    // this.occupantMessage = message;
+    // this.uploadForm.disable();
   }
 
  
