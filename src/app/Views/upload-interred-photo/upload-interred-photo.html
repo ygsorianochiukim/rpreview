@@ -117,6 +117,20 @@
                 </div>
               </div>
             </div>
+
+            <!-- Facebook Post Consent -->
+            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" formControlName="allow_facebook_post"
+                       class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0">
+                <span class="text-sm text-gray-700 font-nunito leading-relaxed">
+                  I allow Renaissance Park to post this photo of <strong>{{ record.value.occupant_name }}</strong>
+                  on Facebook as part of the Online Interment Service announcement.
+                  <span class="text-gray-500">(Optional)</span>
+                </span>
+              </label>
+            </div>
+
             <!-- 🔥 CROPPER MODAL -->
           <div *ngIf="showCropper"
               class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">

@@ -99,7 +99,8 @@ export class UploadInterredPhotoComponent implements OnInit {
               photo: [null],
               preview: [''],
               recordId: [null],
-              editing: [false]
+              editing: [false],
+              allow_facebook_post: [false]
             }));
           });
 
@@ -252,6 +253,7 @@ export class UploadInterredPhotoComponent implements OnInit {
         fd.append('photo', val.photo);
         fd.append('uploader_name', val.uploader_name);
         fd.append('gender', val.gender);
+        fd.append('allow_facebook_post', val.allow_facebook_post ? '1' : '0');
         updateCalls.push(this.intermentPhotoService.updatePhoto(val.recordId, fd));
       }
 
@@ -262,6 +264,7 @@ export class UploadInterredPhotoComponent implements OnInit {
         newFormData.append(`occupants[${i}][gender]`, val.gender);
         newFormData.append(`occupants[${i}][uploader_name]`, val.uploader_name);
         newFormData.append(`occupants[${i}][photo]`, val.photo);
+        newFormData.append(`occupants[${i}][allow_facebook_post]`, val.allow_facebook_post ? '1' : '0');
       }
     });
 
